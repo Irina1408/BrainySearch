@@ -1,0 +1,16 @@
+﻿body {
+    background-color: rgba(80, 201, 206, 1);
+    color: #004f7c;
+}
+
+.navbar-inverse {
+    background-color: rgba(25, 52, 70, 1);
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: rgba(255, 234, 208, 1);
+}
+
+.a.navbar-brand {
+    color: rgba(255, 234, 208, 1);
+}

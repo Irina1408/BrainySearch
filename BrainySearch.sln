@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainySearch", "BrainySearch\BrainySearch.csproj", "{F4FCE9D5-D522-46C1-92E9-742039FCBD84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainySearch.Data", "BrainySearch.Data\BrainySearch.Data.csproj", "{9C8E2EAA-E975-4188-8FEB-68ED71E04C7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainySearch.Tests", "BrainySearch.Tests\BrainySearch.Tests.csproj", "{EFC95097-236A-4BB4-8DB8-99F7E061F94E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4FCE9D5-D522-46C1-92E9-742039FCBD84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4FCE9D5-D522-46C1-92E9-742039FCBD84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4FCE9D5-D522-46C1-92E9-742039FCBD84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4FCE9D5-D522-46C1-92E9-742039FCBD84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C8E2EAA-E975-4188-8FEB-68ED71E04C7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C8E2EAA-E975-4188-8FEB-68ED71E04C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C8E2EAA-E975-4188-8FEB-68ED71E04C7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C8E2EAA-E975-4188-8FEB-68ED71E04C7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFC95097-236A-4BB4-8DB8-99F7E061F94E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFC95097-236A-4BB4-8DB8-99F7E061F94E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFC95097-236A-4BB4-8DB8-99F7E061F94E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFC95097-236A-4BB4-8DB8-99F7E061F94E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
