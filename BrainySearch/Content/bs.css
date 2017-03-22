@@ -1,16 +1,36 @@
-﻿body {
-    background-color: rgba(80, 201, 206, 1);
-    color: #004f7c;
+﻿/*
+    Page body: default background and foreground
+*/
+body {
+    background-color: #94D3E8;
+    color: #153243;
 }
 
+/*
+    Navigation bar in the top of page
+*/
 .navbar-inverse {
-    background-color: rgba(25, 52, 70, 1);
+    background-color: #62929E;
 }
 
+/*
+    Navigation bar links style
+*/
 .navbar-inverse .navbar-nav > li > a {
-    color: rgba(255, 234, 208, 1);
+    color: #042A2B;
 }
 
-.a.navbar-brand {
-    color: rgba(255, 234, 208, 1);
+/*
+    Navigation bar buttons style
+*/
+.navbar-inverse .navbar-brand {
+    color: #042A2B;
+}
+
+/*
+    Rectangle on the page
+*/
+.jumbotron {
+    margin-top: 20px;
+    background-color: #CDD7D6;
 }
