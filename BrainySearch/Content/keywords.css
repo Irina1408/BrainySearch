@@ -1,0 +1,78 @@
+﻿
+.keyword-active {
+    display: inline-block;
+    padding: 6px 27px 6px 10px;
+    font-size: 14px;
+    line-height: 14px;
+    border-radius: 1em;
+    background: #BAF46E;
+    text-decoration: none;
+    margin-top: 3px;
+    margin-left: 3px;
+    color: #2A8E00;
+}
+
+.keyword-active:before {
+    width: 20px;
+    height: 20px;
+    right: 0.15em;
+    top: 0.19em;
+}
+
+.keyword-active:active {
+    text-decoration: none;
+    background: #D7F9A9;
+    color: #2A8E00;
+}
+
+.keyword-active:hover {
+    background-color: #D7F9A9;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.remove-icon {
+    position: absolute;
+    background-image: url("Images/Remove.png")!important; 
+    background-repeat: no-repeat;  
+    background-position: right;  
+}
+
+.remove-icon:before {
+    content: '';
+    position: absolute;
+}
+
+.keyword-group,
+.keyword-group-vertical {
+  position: relative;
+  vertical-align: middle;
+}
+
+.keyword-group > .keyword-active,
+.keyword-group-vertical > .keyword-active {
+  position: relative;
+  float: left;
+}
+
+.keyword-group > .keyword-active:hover,
+.keyword-group-vertical > .keyword-active:hover,
+.keyword-group > .keyword-active:focus,
+.keyword-group-vertical > .keyword-active:focus,
+.keyword-group > .keyword-active:active,
+.keyword-group-vertical > .keyword-active:active,
+.keyword-group > .keyword-active.active,
+.keyword-group-vertical > .keyword-active.active {
+  z-index: 2;
+}
+
+.keyword-group > .keyword-active:focus,
+.keyword-group-vertical > .keyword-active:focus {
+  outline: none;
+}
+
+.keyword-group .keyword-active + .keyword-active,
+.keyword-group .keyword-active + .keyword-group,
+.keyword-group .keyword-group + .keyword-active,
+.keyword-group .keyword-group + .keyword-group {
+}

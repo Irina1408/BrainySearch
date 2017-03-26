@@ -3,5 +3,15 @@
 }
 
 <div class="jumbotron">
-    <h1>It will be list of lectures</h1>
+    <h1>Here will be list of lectures</h1>
 </div>
+
+@using (Html.BeginForm("TestMethod", "Lectures", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <input type="submit" value="Test" class="btn btn-default" />
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

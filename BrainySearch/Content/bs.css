@@ -2,35 +2,80 @@
     Page body: default background and foreground
 */
 body {
-    background-color: #94D3E8;
-    color: #153243;
+    background-color: white;
+    color: #2A8E00;
 }
 
 /*
     Navigation bar in the top of page
 */
 .navbar-inverse {
-    background-color: #62929E;
+    background-color: #A4F43D;
+    color: black;
 }
-
-/*
-    Navigation bar links style
-*/
-.navbar-inverse .navbar-nav > li > a {
-    color: #042A2B;
+.navbar-brand {
+    font-size: 22px;
 }
-
 /*
     Navigation bar buttons style
 */
-.navbar-inverse .navbar-brand {
-    color: #042A2B;
+.navbar-inverse .navbar-brand,
+.navbar-inverse .navbar-nav > li > a {
+    color: black;
 }
 
+.navbar-nav {
+    font-size: 16px;
+}
+
+.btn {
+    color: #2A8E00;
+    background: #BAF46E;
+}
+
+.btn:hover,
+.btn:focus {
+    color: #2A8E00;
+    background: #D7F9A9;
+}
 /*
     Rectangle on the page
 */
 .jumbotron {
-    margin-top: 20px;
+    /*margin-top: 20px;*/
     background-color: #CDD7D6;
+}
+
+.navbar-brand {
+    float: none;
+}
+
+.navbar-nav {
+    margin: 7.5px -15px
+}
+
+h1, h2 {
+    margin-top: 40px;
+}
+
+hr {
+    right: 0;
+    left: 0;
+}
+
+.btn,
+.input-sm,
+.input-lg,
+.form-control,
+.input-group-lg > .form-control,
+.input-group-lg > .input-group-addon,
+.input-group-lg > .input-group-btn > .btn {
+    border-radius: 0px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 75%;
+  background-color: white;
 }
