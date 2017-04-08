@@ -6,9 +6,22 @@
     <link href="~/Content/keywords.css" rel="stylesheet" type="text/css" />
 }
 
+@*<script>
+  (function() {
+    var cx = '015536730667522181619:rlum22alhai';
+    var gcse = document.createElement('script');
+    gcse.type = 'text/javascript';
+    gcse.async = true;
+    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(gcse, s);
+  })();
+</script>*@
+
 <h1> Search info</h1>
 <hr />
 <div class="row">
+    @*<gcse:search></gcse:search>*@
     <div class="col-sm-6 col-md-6">
         <div>
             @* Lecture theme *@
@@ -138,7 +151,7 @@
                                         + "<label class='control-label'>" + data[i].Text + "<label/>"
                                     + "</td>"
                                     + "<td>"
-                                        + "<a href=" + data[i].SourceLink + ">" + data[i].SourceLink + "</a>"
+                                        + "<a style='word-wrap:break-word' href=" + data[i].SourceLink + ">" + data[i].ShortLink + "</a>"
                                     + "</td>"
                                     + "</tr>";
                     $(newRow).appendTo('#searchResultItems');

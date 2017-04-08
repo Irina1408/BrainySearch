@@ -1,5 +1,6 @@
 ﻿namespace BrainySearch.Services
 {
+    using Data;
     using Data.Models;
     using System;
     using System.Collections.Generic;

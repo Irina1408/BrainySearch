@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainySearch.Tests", "Brain
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainySearch.Services", "BrainySearch.Services\BrainySearch.Services.csproj", "{49201FAB-6E08-4712-8424-B79554495305}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainySearch.Logic", "BrainySearch.Logic\BrainySearch.Logic.csproj", "{75447862-B279-4910-9DAF-F1E6C83A08BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{49201FAB-6E08-4712-8424-B79554495305}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49201FAB-6E08-4712-8424-B79554495305}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49201FAB-6E08-4712-8424-B79554495305}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75447862-B279-4910-9DAF-F1E6C83A08BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75447862-B279-4910-9DAF-F1E6C83A08BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75447862-B279-4910-9DAF-F1E6C83A08BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75447862-B279-4910-9DAF-F1E6C83A08BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

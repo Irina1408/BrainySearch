@@ -11,6 +11,8 @@ namespace BrainySearch.Models.Lectures
 
         public string SourceLink { get; set; }
 
+        public string ShortLink { get; set; }
+
         public bool AddToLecture { get; set; }
     }
 }

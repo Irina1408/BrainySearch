@@ -1,4 +1,5 @@
-﻿using BrainySearch.Models.Lectures;
+﻿using BrainySearch.Logic.Search;
+using BrainySearch.Models.Lectures;
 using Microsoft.Web.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -35,10 +36,28 @@ namespace BrainySearch.Controllers
         [HttpGet]
         public ActionResult Search(string lectureTheme, string[] keyWords)
         {
-            // TODO: REMOVE only for tests
             var res = new List<SearchResultViewModel>();
-            res.Add(new SearchResultViewModel { Text = "Test result 1", AddToLecture = true, SourceLink = "http://www.mysamplecode.com/2012/04/generate-html-table-using-javascript.html" });
-            res.Add(new SearchResultViewModel { Text = "Test result 2", AddToLecture = true, SourceLink = "https://developer.mozilla.org/en-US/docs/Web/JavaScript?redirectlocale=en-US&redirectslug=JavaScript" });
+            var searchService = new BrainySearchService();
+            var searchResult = searchService.Search(lectureTheme);
+
+            if(!searchResult.HasErrors)
+            {
+                foreach (var sr in searchResult.Results)
+                {
+                    res.Add(new SearchResultViewModel
+                    {
+                        Text = string.Format("{0}/n{1}", sr.Title, sr.Description),
+                        AddToLecture = true,
+                        SourceLink = sr.Link.EndsWith("/") ? sr.Link.Substring(0, sr.Link.Length - 1) : sr.Link,
+                        ShortLink = sr.Link.Length > 30 ? string.Format("{0}...", sr.Link.Substring(0, 30)) : sr.Link
+                    });
+                }
+            }
+            // for tests
+            else
+            {
+                res.Add(new SearchResultViewModel { Text = searchResult.ErrorMessage });
+            }          
 
             return Content(JsonConvert.SerializeObject(res));
         }
