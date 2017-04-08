@@ -67,9 +67,18 @@
     </div>
 </div>
 
+@* show search result line *@
+<div id="searching" style="display: none;">
+    <hr style="margin-top: 10px;" />
+</div>
+
+@* Label of loading process *@
+<div id="searchingStarted" style="display: none;">
+    <h3 class='control-label' style="margin-top: 10px; margin-left: 15px">Searching...</h3>
+</div>
+
 @* show search result *@
 <div id="searchResultContainer" style="display: none;">
-    <hr style="margin-top: 10px;" />
     <div class="panel panel-default" style="margin-top: 5px;">
         <div class="panel-heading">Search result</div>
         <table class="table">
@@ -125,6 +134,13 @@
 
             // search Button click handler
             $('#search').click(function () {
+                // hide tbody searchResultContainer
+                $("#searchResultContainer").css('display', 'none');
+                // show separator line
+                $("#searching").css('display', 'block');
+                // show process loading label
+                $("#searchingStarted").css('display', 'block');
+
                 var d = {};
                 d.lectureTheme = $('#lectureTheme').val();
                 d.keyWords = keyWordArray;
@@ -157,6 +173,8 @@
                     $(newRow).appendTo('#searchResultItems');
                 }
 
+                // hide process loading label
+                $("#searchingStarted").css('display', 'none');
                 // show tbody searchResultContainer
                 $("#searchResultContainer").css('display', 'block');
             }
