@@ -10,7 +10,7 @@ namespace BrainySearch.Logic.Search
     /// <summary>
     /// Provides a Google Search
     /// </summary>
-    public interface IGoogleService : ISearchService
+    public interface IGoogleService : IWebSearchService
     {
     }
 }

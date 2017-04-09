@@ -62,6 +62,23 @@ namespace BrainySearch.Logic.Parser
             return cq.Document.GetElementById(id)?.Render();
         }
 
+        /// <summary>
+        /// Returns html of tag with entered name and attribute name and value
+        /// </summary>
+        public static string GetHtmlByTagNameAndAttribute(string html, string tagName, string attributeName, string attributeValue)
+        {
+            var cq = CQ.Create(html);
+            var elements = cq.Document.GetElementsByTagName(tagName);
+
+            foreach(var elem in elements)
+            {
+                if (elem.GetAttribute(attributeName) == attributeValue)
+                    return elem.Render();
+            }
+
+            return null;
+        }
+
         #endregion
 
         #region Get dom object

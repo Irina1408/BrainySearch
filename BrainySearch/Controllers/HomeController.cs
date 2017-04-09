@@ -1,4 +1,5 @@
 ﻿using BrainySearch.Logic.Search;
+using BrainySearch.Logic.Search.BrainySearchS;
 using BrainySearch.Models.Lectures;
 using Microsoft.Web.Mvc;
 using Newtonsoft.Json;

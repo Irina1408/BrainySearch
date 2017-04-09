@@ -82,6 +82,10 @@
       <HintPath>..\packages\LanguageDetection.1.2.0\lib\net45\LanguageDetection.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MediaWiki.NET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=595f0c3c92126b75, processorArchitecture=MSIL">
+      <HintPath>..\packages\MediaWiki.NET.1.0.0\lib\net45\MediaWiki.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -108,10 +112,12 @@
     <Compile Include="LangDetection\LangDetector.cs" />
     <Compile Include="Parser\ParserBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Search\Base\ISearchService.cs" />
+    <Compile Include="Search\Base\IWebSearchService.cs" />
     <Compile Include="Search\Base\ISearchResult.cs" />
+    <Compile Include="Search\Base\ISearchService.cs" />
     <Compile Include="Search\Base\SearchResult.cs" />
     <Compile Include="Search\Base\SearchResults.cs" />
+    <Compile Include="Search\BrainySearchS\IBrainySearchService.cs" />
     <Compile Include="Search\DuckDuckGo\DuckDuckGoService.cs" />
     <Compile Include="Search\DuckDuckGo\IDuckDuckGoService.cs" />
     <Compile Include="Search\Gigablast\GigablastResponse.cs" />
@@ -119,9 +125,11 @@
     <Compile Include="Search\Gigablast\IGigablastService.cs" />
     <Compile Include="Search\Google\GoogleService.cs" />
     <Compile Include="Search\Google\IGoogleService.cs" />
-    <Compile Include="Search\BrainySearchService.cs" />
+    <Compile Include="Search\BrainySearchS\BrainySearchService.cs" />
     <Compile Include="Search\StartPage\IStartPageService.cs" />
     <Compile Include="Search\StartPage\StartPageService.cs" />
+    <Compile Include="Search\Wikipedia\IWikipediaService.cs" />
+    <Compile Include="Search\Wikipedia\WikipediaService.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

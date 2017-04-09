@@ -31,13 +31,13 @@ namespace BrainySearch.Logic.Search
             MaxPagesCount = 10;
         }
 
-        public string URL { get { return "https://www.google.com/search"; } }
-
         public string Language { get; set; }
 
         public string LanguageCode { get; set; }
 
         public int MaxPagesCount { get; set; }
+
+        public string URL { get { return "https://www.google.com/search"; } }
 
         public SearchResults Search(string searchString)
         {

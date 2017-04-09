@@ -10,9 +10,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BrainySearch.Logic.Search
+namespace BrainySearch.Logic.Search.BrainySearchS
 {
-    public class BrainySearchService
+    public class BrainySearchService : IBrainySearchService
     {
         public SearchResults Search(string searchString)
         {
@@ -33,7 +33,7 @@ namespace BrainySearch.Logic.Search
             return searchResults;
         }
 
-        private bool Search(ref SearchResults searchResults, string searchString, ISearchService searchService)
+        private bool Search(ref SearchResults searchResults, string searchString, IWebSearchService searchService)
         {
             if (searchService == null) return false;
 

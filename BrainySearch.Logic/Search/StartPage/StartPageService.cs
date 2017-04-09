@@ -19,14 +19,14 @@ namespace BrainySearch.Logic.Search.StartPage
             MaxPagesCount = 10;
         }
 
-        // example: https://s10-eu4.startpage.com/do/search?cmd=process_search&language=english&qid=LELOTLQRSSPO257GFUQJUE&rcount=1&rl=NONE&abp=-1&query=asp.net&cat=web&t=&startat=30
-        public string URL { get { return "https://s10-eu4.startpage.com/do/search"; } }
-
         public string Language { get; set; }
 
         public string LanguageCode { get; set; }
 
         public int MaxPagesCount { get; set; }
+
+        // example: https://s10-eu4.startpage.com/do/search?cmd=process_search&language=english&qid=LELOTLQRSSPO257GFUQJUE&rcount=1&rl=NONE&abp=-1&query=asp.net&cat=web&t=&startat=30
+        public string URL { get { return "https://s10-eu4.startpage.com/do/search"; } }
         
         public SearchResults Search(string searchString)
         {
@@ -35,8 +35,6 @@ namespace BrainySearch.Logic.Search.StartPage
 
             try
             {
-                string html = "";
-
                 // search
                 using (var webClient = new WebClient())
                 {
@@ -44,7 +42,6 @@ namespace BrainySearch.Logic.Search.StartPage
                     NameValueCollection nameValueCollection = new NameValueCollection();
                     nameValueCollection.Add("cmd", "process_search");
                     nameValueCollection.Add("language", Language.ToLower());
-                    nameValueCollection.Add("qid", "LELOTLQRSSPO257GFUQJUE");
                     nameValueCollection.Add("rcount", "1");
                     nameValueCollection.Add("rl", "NONE");
                     nameValueCollection.Add("abp", "-1");
@@ -53,6 +50,10 @@ namespace BrainySearch.Logic.Search.StartPage
                     nameValueCollection.Add("t", "");
                     nameValueCollection.Add("startat", "0");
                     webClient.QueryString.Add(nameValueCollection);
+
+                    // set generated qid
+                    // "LELOTLQRSSPO257GFUQJUE"
+                    webClient.QueryString.Add("qid", GetQid(webClient));
 
                     // calculate max pages count -> one StartPage result page contains max 10 results
                     var maxPagesCount = (int)Math.Round(((double)MaxPagesCount) / 10, 0, MidpointRounding.AwayFromZero);
@@ -64,7 +65,7 @@ namespace BrainySearch.Logic.Search.StartPage
 
                         // get search result html
                         webClient.QueryString.Set("startat", (iPage * 10).ToString());
-                        html = webClient.DownloadString(URL);
+                        var html = webClient.DownloadString(URL);
 
                         // get all results
                         for (int i = 1 + iPage * 10; ; i++)
@@ -98,6 +99,16 @@ namespace BrainySearch.Logic.Search.StartPage
             }
 
             return res;
+        }
+
+        private string GetQid(WebClient webClient)
+        {
+            var html = webClient.DownloadString(URL);
+            var qidHtml = ParserBase.GetHtmlByTagNameAndAttribute(html, "input", "name", "qid");
+
+            if (string.IsNullOrEmpty(qidHtml)) return null;
+
+            return ParserBase.GetAttribute(qidHtml, "value");
         }
     }
 }

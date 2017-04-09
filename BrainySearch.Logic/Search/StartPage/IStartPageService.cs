@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BrainySearch.Logic.Search.StartPage
 {
-    public interface IStartPageService : ISearchService
+    public interface IStartPageService : IWebSearchService
     {
     }
 }

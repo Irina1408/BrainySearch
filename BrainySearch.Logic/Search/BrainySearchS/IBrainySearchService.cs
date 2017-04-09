@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BrainySearch.Logic.Search.Gigablast
+namespace BrainySearch.Logic.Search.BrainySearchS
 {
-    public interface IGigablastService : IWebSearchService
+    public interface IBrainySearchService : ISearchService
     {
+
     }
 }

@@ -22,13 +22,13 @@ namespace BrainySearch.Logic.Search.DuckDuckGo
             MaxPagesCount = 30;
         }
 
-        public string URL { get { return "https://duckduckgo.com/"; } }
-
         public string Language { get; set; }
 
         public string LanguageCode { get; set; }
 
         public int MaxPagesCount { get; set; }
+
+        public string URL { get { return "https://duckduckgo.com/"; } }
 
         public SearchResults Search(string searchString)
         {
