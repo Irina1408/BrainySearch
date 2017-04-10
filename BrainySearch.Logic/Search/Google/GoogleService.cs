@@ -3,18 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GoogleSearchApi;
 using Newtonsoft.Json;
 using System.Net;
 using GoogleCSE;
 using System.IO;
-using Google.Apis.Services;
-using Google.Apis.Customsearch.v1;
-using Google.Apis.Customsearch.v1.Data;
-using GoogleApi.Entities.Search;
-using System.Collections.Specialized;
-using System.Net.Http;
-using CsQuery;
 using BrainySearch.Logic.Search.Base;
 
 namespace BrainySearch.Logic.Search
@@ -26,14 +18,11 @@ namespace BrainySearch.Logic.Search
         
         public GoogleService()
         {
-            Language = "english";
-            LanguageCode = "en";
+            Language = "en";
             MaxPagesCount = 10;
         }
 
         public string Language { get; set; }
-
-        public string LanguageCode { get; set; }
 
         public int MaxPagesCount { get; set; }
 
@@ -43,7 +32,7 @@ namespace BrainySearch.Logic.Search
         {
             var res = new SearchResults();
 
-            var sr = new GoogleCSE.GoogleSearch(CX, LanguageCode, null, 10, MaxPagesCount, 1, GoogleSearchMethod.CSE, API_KEY);
+            var sr = new GoogleCSE.GoogleSearch(CX, Language, null, 10, MaxPagesCount, 1, GoogleSearchMethod.CSE, API_KEY);
             try
             {
                 var r = sr.Search(searchString);

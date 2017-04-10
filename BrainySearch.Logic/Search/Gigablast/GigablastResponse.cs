@@ -90,7 +90,6 @@ namespace BrainySearch.Logic.Search.Gigablast
         public Result[] results { get; set; }
     }
 
-    // Start of query-based information.
     public class QueryInfo
     {
 

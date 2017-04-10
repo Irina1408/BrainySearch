@@ -39,7 +39,7 @@ namespace BrainySearch.Controllers
         {
             var res = new List<SearchResultViewModel>();
             var searchService = new BrainySearchService();
-            var searchResult = searchService.Search(lectureTheme);
+            var searchResult = searchService.Search(lectureTheme, keyWords);
 
             if(!searchResult.HasErrors)
             {

@@ -1,22 +1,55 @@
 ﻿using BrainySearch.Logic.Search.Base;
-using BrainySearch.Logic.Search.DuckDuckGo;
-using BrainySearch.Logic.Search.Gigablast;
 using BrainySearch.Logic.Search.StartPage;
+using BrainySearch.Logic.Search.Wikipedia;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace BrainySearch.Logic.Search.BrainySearchS
 {
     public class BrainySearchService : IBrainySearchService
     {
+        public string Language { get; set; }
+
+        public SearchResults Search(string searchString, string[] keyWords)
+        {
+            // result
+            var searchResults = new SearchResults();
+
+            // detect search language
+            DetectLanguage(searchString);
+
+            if(keyWords != null)
+            {
+                var wikiService = new WikipediaService()
+                {
+                    SearchFullDescription = true,
+                    MaxPagesCount = 1
+                };
+
+                // search keyword definitions
+                foreach (var keyWord in keyWords)
+                {
+                    // search key word definition in the wikipedia
+                    var wikiSr = Search(keyWord, wikiService);
+                    // add search results in full results list (ignore errors)
+                    searchResults.Results.AddRange(wikiSr.Results);
+                }
+            }
+
+            // search by full search string
+            var sr = Search(searchString, new StartPageService() { MaxPagesCount = 100 });
+            // add search results in full results list without dublicates
+            searchResults.Results.AddRange(sr.Results.Where(item => !searchResults.Results.Any(it => it.Link == item.Link)));
+            // copy error if it is
+            searchResults.ErrorMessage = sr.ErrorMessage;
+
+            return searchResults;
+        }
+
         public SearchResults Search(string searchString)
         {
-            var searchResults = new SearchResults();
+            DetectLanguage(searchString);
 
             // 1. Google search
             //if (Search(ref searchResults, searchString, new GoogleService())) return searchResults;
@@ -28,9 +61,7 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             //if (Search(ref searchResults, searchString, new DuckDuckGoService())) return searchResults;
 
             // 4. StartPage
-            if (Search(ref searchResults, searchString, new StartPageService())) return searchResults;
-            
-            return searchResults;
+            return Search(searchString, new StartPageService());
         }
 
         private bool Search(ref SearchResults searchResults, string searchString, IWebSearchService searchService)
@@ -39,14 +70,19 @@ namespace BrainySearch.Logic.Search.BrainySearchS
 
             try
             {
-                searchService.LanguageCode = LangDetection.LangDetector.DetectLanguage(searchString);
-                searchService.Language = CultureInfo.GetCultureInfo(searchService.LanguageCode).EnglishName;
+                //searchService.Language = Language;
                 searchService.MaxPagesCount = 100;
-                searchResults = searchService.Search(searchString);
+                var sr = searchService.Search(searchString);
 
-                if (!searchResults.HasErrors)
+                if (!sr.HasErrors)
                 {
-                    FixLinks(ref searchResults);
+                    FixLinks(ref sr);
+
+                    foreach(var r in sr.Results)
+                    {
+                        searchResults.Results.Add(r);
+                    }
+
                     return true;
                 }
             }
@@ -59,15 +95,45 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             return false;
         }
 
+        private SearchResults Search(string searchString, IWebSearchService searchService)
+        {
+            try
+            {
+                searchService.Language = Language;
+                //searchService.MaxPagesCount = 100;
+                var searchResults = searchService.Search(searchString);
+
+                if (!searchResults.HasErrors)
+                {
+                    FixLinks(ref searchResults);
+                    return searchResults;
+                }
+            }
+            catch (Exception ex)
+            {
+                var searchResults = new SearchResults();
+                searchResults.ErrorMessage = ex.Message;
+                return searchResults;
+            }
+
+            return new SearchResults();
+        }
+
         private void FixLinks(ref SearchResults searchResults)
         {
             foreach(var sr in searchResults.Results)
             {
-                if(!sr.Link.StartsWith("http"))
+                if(sr.Link != null && !sr.Link.StartsWith("http"))
                 {
                     sr.Link = string.Format("https://{0}", sr.Link);
                 }
             }
+        }
+
+        private void DetectLanguage(string text)
+        {
+            Language = LangDetection.LangDetector.DetectLanguage(text);
+            //CultureInfo.GetCultureInfo(LanguageCode).EnglishName;
         }
     }
 }

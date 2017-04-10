@@ -11,7 +11,8 @@ namespace BrainySearch.Logic.LangDetection
         public static string DetectLanguage(string text)
         {
             var detector = new LanguageDetection.LanguageDetector();
-            detector.AddAllLanguages();
+            //detector.AddAllLanguages();
+            detector.AddLanguages("ru", "en", "uk");
             return detector.Detect(text);
         }
     }

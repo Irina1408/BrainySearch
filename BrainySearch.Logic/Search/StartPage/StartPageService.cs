@@ -7,6 +7,7 @@ using BrainySearch.Logic.Search.Base;
 using System.Net;
 using System.Collections.Specialized;
 using BrainySearch.Logic.Parser;
+using System.Globalization;
 
 namespace BrainySearch.Logic.Search.StartPage
 {
@@ -14,14 +15,11 @@ namespace BrainySearch.Logic.Search.StartPage
     {
         public StartPageService()
         {
-            Language = "english";
-            LanguageCode = "en";
+            Language = "en";
             MaxPagesCount = 10;
         }
 
         public string Language { get; set; }
-
-        public string LanguageCode { get; set; }
 
         public int MaxPagesCount { get; set; }
 
@@ -38,10 +36,15 @@ namespace BrainySearch.Logic.Search.StartPage
                 // search
                 using (var webClient = new WebClient())
                 {
+                    // prepare web client
+                    webClient.Encoding = System.Text.Encoding.UTF8;
+                    // get full language name
+                    var lang = CultureInfo.GetCultureInfo(Language).EnglishName.ToLower();
+
                     // fill attributes
                     NameValueCollection nameValueCollection = new NameValueCollection();
                     nameValueCollection.Add("cmd", "process_search");
-                    nameValueCollection.Add("language", Language.ToLower());
+                    nameValueCollection.Add("language", lang);
                     nameValueCollection.Add("rcount", "1");
                     nameValueCollection.Add("rl", "NONE");
                     nameValueCollection.Add("abp", "-1");
@@ -50,7 +53,7 @@ namespace BrainySearch.Logic.Search.StartPage
                     nameValueCollection.Add("t", "");
                     nameValueCollection.Add("startat", "0");
                     webClient.QueryString.Add(nameValueCollection);
-
+                    
                     // set generated qid
                     // "LELOTLQRSSPO257GFUQJUE"
                     webClient.QueryString.Add("qid", GetQid(webClient));

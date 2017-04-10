@@ -9,6 +9,6 @@ namespace BrainySearch.Logic.Search.BrainySearchS
 {
     public interface IBrainySearchService : ISearchService
     {
-
+        SearchResults Search(string searchString, string[] keyWords);
     }
 }

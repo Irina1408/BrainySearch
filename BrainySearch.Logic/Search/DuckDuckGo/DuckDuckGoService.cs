@@ -17,14 +17,11 @@ namespace BrainySearch.Logic.Search.DuckDuckGo
     {
         public DuckDuckGoService()
         {
-            Language = "english";
-            LanguageCode = "en";
+            Language = "en";
             MaxPagesCount = 30;
         }
 
         public string Language { get; set; }
-
-        public string LanguageCode { get; set; }
 
         public int MaxPagesCount { get; set; }
 
