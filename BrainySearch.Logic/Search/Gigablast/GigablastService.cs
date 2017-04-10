@@ -24,7 +24,7 @@ namespace BrainySearch.Logic.Search.Gigablast
 
         public int MaxPagesCount { get; set; }
 
-        public string URL { get { return "https://www.gigablast.com/search"; } }
+        public string URL => "https://www.gigablast.com/search";
 
         public SearchResults Search(string searchString)
         {

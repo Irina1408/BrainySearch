@@ -25,7 +25,7 @@ namespace BrainySearch.Logic.Search.DuckDuckGo
 
         public int MaxPagesCount { get; set; }
 
-        public string URL { get { return "https://duckduckgo.com/"; } }
+        public string URL => "https://duckduckgo.com/";
 
         public SearchResults Search(string searchString)
         {

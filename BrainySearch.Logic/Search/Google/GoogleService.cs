@@ -11,10 +11,17 @@ using BrainySearch.Logic.Search.Base;
 
 namespace BrainySearch.Logic.Search
 {
+    /// <summary>
+    /// Should be changed CX and API_KEY
+    /// Generate api key -> https://console.developers.google.com
+    /// Generate cx -> https://cse.google.com/cse/manage/all
+    /// </summary>
     public class GoogleService : IGoogleService
     {
-        private const string CX = "015536730667522181619:rlum22alhai";
-        private const string API_KEY = "AIzaSyCeDqFm6I3CrUnePq2dZxrrIlorR77gpw8";
+        // example: 015536730667522181619:rlum22alhai
+        private const string CX = "";
+        // example: AIzaSyCeDqFm6I3CrUnePq2dZxrrIlorR77gpw8
+        private const string API_KEY = "";
         
         public GoogleService()
         {
@@ -26,7 +33,7 @@ namespace BrainySearch.Logic.Search
 
         public int MaxPagesCount { get; set; }
 
-        public string URL { get { return "https://www.google.com/search"; } }
+        public string URL => "https://www.google.com/search";
 
         public SearchResults Search(string searchString)
         {

@@ -24,7 +24,7 @@ namespace BrainySearch.Logic.Search.StartPage
         public int MaxPagesCount { get; set; }
 
         // example: https://s10-eu4.startpage.com/do/search?cmd=process_search&language=english&qid=LELOTLQRSSPO257GFUQJUE&rcount=1&rl=NONE&abp=-1&query=asp.net&cat=web&t=&startat=30
-        public string URL { get { return "https://s10-eu4.startpage.com/do/search"; } }
+        public string URL => "https://s10-eu4.startpage.com/do/search";
         
         public SearchResults Search(string searchString)
         {

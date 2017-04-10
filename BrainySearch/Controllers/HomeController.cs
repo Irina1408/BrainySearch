@@ -45,12 +45,22 @@ namespace BrainySearch.Controllers
             {
                 foreach (var sr in searchResult.Results)
                 {
+                    // create short link for view
+                    var shortLink = sr.Link.Length > 30 ? string.Format("{0}...", sr.Link.Substring(0, 30)) : sr.Link;
+
+                    if (shortLink.StartsWith("https://"))
+                        shortLink = shortLink.Substring("https://".Length, shortLink.Length - "https://".Length);
+
+                    if (shortLink.StartsWith("http://"))
+                        shortLink = shortLink.Substring("http://".Length, shortLink.Length - "http://".Length);
+
                     res.Add(new SearchResultViewModel
                     {
-                        Text = string.Format("{0}/n{1}", sr.Title, sr.Description),
+                        Title = sr.Title,
+                        Text = sr.Description,
                         AddToLecture = true,
-                        SourceLink = sr.Link.EndsWith("/") ? sr.Link.Substring(0, sr.Link.Length - 1) : sr.Link,
-                        ShortLink = sr.Link.Length > 30 ? string.Format("{0}...", sr.Link.Substring(0, 30)) : sr.Link
+                        SourceLink = sr.Link,
+                        ShortLink = shortLink
                     });
                 }
             }

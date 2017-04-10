@@ -6,18 +6,6 @@
     <link href="~/Content/keywords.css" rel="stylesheet" type="text/css" />
 }
 
-@*<script>
-  (function() {
-    var cx = '015536730667522181619:rlum22alhai';
-    var gcse = document.createElement('script');
-    gcse.type = 'text/javascript';
-    gcse.async = true;
-    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(gcse, s);
-  })();
-</script>*@
-
 <h1> Search info</h1>
 <hr />
 <div class="row">
@@ -164,7 +152,8 @@
                                         + "<input type='checkbox' width='min-content' checked=" + data[i].AddToLecture + " />"
                                     + "</td>"
                                     + "<td>"
-                                        + "<label class='control-label'>" + data[i].Text + "</label>"
+                                        + "<label class='control-label'>" + data[i].Title + "</label>"
+                                        + "<label class='control-label' style='font-weight: normal;'>" + data[i].Text + "</label>"
                                     + "</td>"
                                     + "<td>"
                                         + "<a style='word-wrap:break-word' href=" + data[i].SourceLink + ">" + data[i].ShortLink + "</a>"

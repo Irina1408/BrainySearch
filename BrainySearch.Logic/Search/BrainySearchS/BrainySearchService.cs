@@ -123,9 +123,13 @@ namespace BrainySearch.Logic.Search.BrainySearchS
         {
             foreach(var sr in searchResults.Results)
             {
-                if(sr.Link != null && !sr.Link.StartsWith("http"))
+                if(sr.Link != null)
                 {
-                    sr.Link = string.Format("https://{0}", sr.Link);
+                    if(!sr.Link.StartsWith("http"))
+                        sr.Link = string.Format("https://{0}", sr.Link);
+
+                    if (sr.Link.EndsWith("/"))
+                        sr.Link = sr.Link.Substring(0, sr.Link.Length - 1);
                 }
             }
         }
