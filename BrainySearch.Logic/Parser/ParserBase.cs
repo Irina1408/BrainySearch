@@ -79,36 +79,10 @@ namespace BrainySearch.Logic.Parser
             return null;
         }
 
-        #endregion
-
-        #region Get dom object
-
-        /// <summary>
-        /// Returns dom object of tag with entered class name
-        /// </summary>
-        public static IDomObject GetDomObjectByTagClassName(string html, string className)
+        public static List<string> GetHtmlTags(string html, string tagName)
         {
             var cq = CQ.Create(html);
-            for (int i = 0; i < cq.Length; i++)
-            {
-                if (cq[i].ClassName == className)
-                {
-                    return cq[i];
-                }
-                else
-                {
-                    if (cq[i].InnerHtmlAllowed)
-                    {
-                        var dom = GetDomObjectByTagClassName(cq[i].Render(), className);
-                        if (dom != null)
-                        {
-                            return dom;
-                        }
-                    }
-                }
-            }
-
-            return null;
+            return cq.Document.GetElementsByTagName(tagName).Select(item => item.Render()).ToList();
         }
 
         #endregion
@@ -140,6 +114,55 @@ namespace BrainySearch.Logic.Parser
         {
             var cq = CQ.Create(html);
             return cq.Attr(attributeName);
+        }
+
+        #endregion
+
+        #region Get content
+
+        public static string GetFullContent(string html)
+        {
+            var cq = CQ.Create(html);
+
+            return cq.Document.InnerText;
+        }
+
+        #endregion
+
+        #region Protected methods
+
+        /// <summary>
+        /// Returns dom object of tag with entered class name
+        /// </summary>
+        protected static IDomObject GetDomObjectByTagClassName(string html, string className)
+        {
+            var cq = CQ.Create(html);
+            for (int i = 0; i < cq.Length; i++)
+            {
+                if (cq[i].ClassName == className)
+                {
+                    return cq[i];
+                }
+                else
+                {
+                    if (cq[i].InnerHtmlAllowed)
+                    {
+                        var dom = GetDomObjectByTagClassName(cq[i].Render(), className);
+                        if (dom != null)
+                        {
+                            return dom;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        protected IDomObject GetDomObjectByTagId(string html, string id)
+        {
+            var cq = CQ.Create(html);
+            return cq.Document.GetElementById(id);
         }
 
         #endregion

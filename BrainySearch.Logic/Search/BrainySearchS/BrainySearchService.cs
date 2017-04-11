@@ -16,9 +16,6 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             // result
             var searchResults = new SearchResults();
 
-            // detect search language
-            DetectLanguage(searchString);
-
             if(keyWords != null)
             {
                 var wikiService = new WikipediaService()
@@ -33,14 +30,17 @@ namespace BrainySearch.Logic.Search.BrainySearchS
                     // search key word definition in the wikipedia
                     var wikiSr = Search(keyWord, wikiService);
                     // add search results in full results list (ignore errors)
-                    searchResults.Results.AddRange(wikiSr.Results);
+                    searchResults.Results.AddRange(
+                        wikiSr.Results.Select(item => new BrainySearchSearchResult(item) { ParsePage = false }));
                 }
             }
 
             // search by full search string
-            var sr = Search(searchString, new StartPageService() { MaxPagesCount = 100 });
+            var sr = Search(searchString);
             // add search results in full results list without dublicates
-            searchResults.Results.AddRange(sr.Results.Where(item => !searchResults.Results.Any(it => it.Link == item.Link)));
+            searchResults.Results.AddRange(
+                sr.Results.Where(item => !searchResults.Results.Any(it => it.Link == item.Link))
+                .Select(item => new BrainySearchSearchResult(item)));
             // copy error if it is
             searchResults.ErrorMessage = sr.ErrorMessage;
 
@@ -49,8 +49,6 @@ namespace BrainySearch.Logic.Search.BrainySearchS
 
         public SearchResults Search(string searchString)
         {
-            DetectLanguage(searchString);
-
             // 1. Google search
             //if (Search(ref searchResults, searchString, new GoogleService())) return searchResults;
 
@@ -61,38 +59,7 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             //if (Search(ref searchResults, searchString, new DuckDuckGoService())) return searchResults;
 
             // 4. StartPage
-            return Search(searchString, new StartPageService());
-        }
-
-        private bool Search(ref SearchResults searchResults, string searchString, IWebSearchService searchService)
-        {
-            if (searchService == null) return false;
-
-            try
-            {
-                //searchService.Language = Language;
-                searchService.MaxPagesCount = 100;
-                var sr = searchService.Search(searchString);
-
-                if (!sr.HasErrors)
-                {
-                    FixLinks(ref sr);
-
-                    foreach(var r in sr.Results)
-                    {
-                        searchResults.Results.Add(r);
-                    }
-
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                searchResults.ErrorMessage = ex.Message;
-                return false;
-            }
-
-            return false;
+            return Search(searchString, new StartPageService() { MaxPagesCount = 100 });
         }
 
         private SearchResults Search(string searchString, IWebSearchService searchService)
@@ -100,12 +67,10 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             try
             {
                 searchService.Language = Language;
-                //searchService.MaxPagesCount = 100;
                 var searchResults = searchService.Search(searchString);
 
                 if (!searchResults.HasErrors)
                 {
-                    FixLinks(ref searchResults);
                     return searchResults;
                 }
             }
@@ -117,27 +82,6 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             }
 
             return new SearchResults();
-        }
-
-        private void FixLinks(ref SearchResults searchResults)
-        {
-            foreach(var sr in searchResults.Results)
-            {
-                if(sr.Link != null)
-                {
-                    if(!sr.Link.StartsWith("http"))
-                        sr.Link = string.Format("https://{0}", sr.Link);
-
-                    if (sr.Link.EndsWith("/"))
-                        sr.Link = sr.Link.Substring(0, sr.Link.Length - 1);
-                }
-            }
-        }
-
-        private void DetectLanguage(string text)
-        {
-            Language = LangDetection.LangDetector.DetectLanguage(text);
-            //CultureInfo.GetCultureInfo(LanguageCode).EnglishName;
         }
     }
 }

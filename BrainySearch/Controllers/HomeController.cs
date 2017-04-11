@@ -1,5 +1,4 @@
-﻿using BrainySearch.Logic.Search;
-using BrainySearch.Logic.Search.BrainySearchS;
+﻿using BrainySearch.Logic.Core;
 using BrainySearch.Models.Lectures;
 using Microsoft.Web.Mvc;
 using Newtonsoft.Json;
@@ -38,8 +37,8 @@ namespace BrainySearch.Controllers
         public ActionResult Search(string lectureTheme, string[] keyWords)
         {
             var res = new List<SearchResultViewModel>();
-            var searchService = new BrainySearchService();
-            var searchResult = searchService.Search(lectureTheme, keyWords);
+            var searchService = new BrainySearchCore();
+            var searchResult = searchService.BrainySearch(lectureTheme, keyWords);
 
             if(!searchResult.HasErrors)
             {

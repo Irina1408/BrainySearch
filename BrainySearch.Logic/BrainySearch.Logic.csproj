@@ -63,14 +63,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\BrainySearchCore.cs" />
     <Compile Include="LangDetection\LangDetector.cs" />
     <Compile Include="Parser\ParserBase.cs" />
+    <Compile Include="Parser\WikipediaParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search\Base\IWebSearchService.cs" />
     <Compile Include="Search\Base\ISearchResult.cs" />
     <Compile Include="Search\Base\ISearchService.cs" />
     <Compile Include="Search\Base\SearchResult.cs" />
     <Compile Include="Search\Base\SearchResults.cs" />
+    <Compile Include="Search\BrainySearchS\BrainySearchSearchResult.cs" />
     <Compile Include="Search\BrainySearchS\IBrainySearchService.cs" />
     <Compile Include="Search\DuckDuckGo\DuckDuckGoService.cs" />
     <Compile Include="Search\DuckDuckGo\IDuckDuckGoService.cs" />
