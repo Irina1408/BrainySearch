@@ -159,7 +159,7 @@ namespace BrainySearch.Logic.Parser
             return null;
         }
 
-        protected IDomObject GetDomObjectByTagId(string html, string id)
+        protected static IDomObject GetDomObjectByTagId(string html, string id)
         {
             var cq = CQ.Create(html);
             return cq.Document.GetElementById(id);

@@ -68,12 +68,13 @@
     <Compile Include="Parser\ParserBase.cs" />
     <Compile Include="Parser\WikipediaParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Search\Base\IWebSearchService.cs" />
-    <Compile Include="Search\Base\ISearchResult.cs" />
-    <Compile Include="Search\Base\ISearchService.cs" />
-    <Compile Include="Search\Base\SearchResult.cs" />
-    <Compile Include="Search\Base\SearchResults.cs" />
-    <Compile Include="Search\BrainySearchS\BrainySearchSearchResult.cs" />
+    <Compile Include="Search\Base\Parameters\ISearchParameters.cs" />
+    <Compile Include="Search\Base\Result\ISearchResult.cs" />
+    <Compile Include="Search\Base\Search\ISearchService.cs" />
+    <Compile Include="Search\Base\Parameters\SearchParameters.cs" />
+    <Compile Include="Search\Base\Result\SearchResult.cs" />
+    <Compile Include="Search\Base\Result\SearchResults.cs" />
+    <Compile Include="Search\Base\Search\SearchService.cs" />
     <Compile Include="Search\BrainySearchS\IBrainySearchService.cs" />
     <Compile Include="Search\DuckDuckGo\DuckDuckGoService.cs" />
     <Compile Include="Search\DuckDuckGo\IDuckDuckGoService.cs" />
@@ -84,8 +85,10 @@
     <Compile Include="Search\Google\IGoogleService.cs" />
     <Compile Include="Search\BrainySearchS\BrainySearchService.cs" />
     <Compile Include="Search\StartPage\IStartPageService.cs" />
+    <Compile Include="Search\StartPage\StartPageParameters.cs" />
     <Compile Include="Search\StartPage\StartPageService.cs" />
     <Compile Include="Search\Wikipedia\IWikipediaService.cs" />
+    <Compile Include="Search\Wikipedia\WikipediaParameters.cs" />
     <Compile Include="Search\Wikipedia\WikipediaService.cs" />
   </ItemGroup>
   <ItemGroup />

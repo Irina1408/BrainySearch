@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BrainySearch.Logic.Search.Wikipedia
 {
-    public interface IWikipediaService : IWebSearchService
+    public interface IWikipediaService : ISearchService<WikipediaParameters, ISearchResult>
     {
     }
 }

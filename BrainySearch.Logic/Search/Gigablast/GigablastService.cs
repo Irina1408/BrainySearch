@@ -12,24 +12,20 @@ namespace BrainySearch.Logic.Search.Gigablast
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    public class GigablastService : IGigablastService
+    public class GigablastService : SearchService, IGigablastService
     {
-        public GigablastService()
-        {
-            Language = "en";
-            MaxPagesCount = 10;
-        }
+        #region Private fields
 
-        public string Language { get; set; }
+        private const string URL = "https://www.gigablast.com/search";
 
-        public int MaxPagesCount { get; set; }
+        #endregion
 
-        public string URL => "https://www.gigablast.com/search";
+        #region Public methods 
 
-        public SearchResults Search(string searchString)
+        public override SearchResults<ISearchResult> Search(string searchString)
         {
             // result
-            var res = new SearchResults();
+            var res = new SearchResults<ISearchResult>();
 
             try
             {
@@ -42,8 +38,8 @@ namespace BrainySearch.Logic.Search.Gigablast
                     nameValueCollection.Add("format", "json");
                     nameValueCollection.Add("c", "main");
                     nameValueCollection.Add("q", searchString);
-                    nameValueCollection.Add("n", MaxPagesCount.ToString());
-                    nameValueCollection.Add("qlang", Language);
+                    nameValueCollection.Add("n", SearchParameters.Limit.ToString());
+                    nameValueCollection.Add("qlang", SearchParameters.Language);
                     nameValueCollection.Add("rand", "1491590369709");
                     nameValueCollection.Add("rxieu", "3784892529");
 
@@ -67,5 +63,7 @@ namespace BrainySearch.Logic.Search.Gigablast
 
             return res;
         }
+
+        #endregion
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BrainySearch.Logic.Search.DuckDuckGo
 {
-    public interface IDuckDuckGoService : IWebSearchService
+    public interface IDuckDuckGoService : ISearchService
     {
     }
 }

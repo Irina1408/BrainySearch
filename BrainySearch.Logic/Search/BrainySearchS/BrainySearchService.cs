@@ -7,22 +7,20 @@ using System.Linq;
 
 namespace BrainySearch.Logic.Search.BrainySearchS
 {
-    public class BrainySearchService : IBrainySearchService
+    public class BrainySearchService : SearchService, IBrainySearchService
     {
-        public string Language { get; set; }
+        #region Public methods
 
-        public SearchResults Search(string searchString, string[] keyWords)
+        public SearchResults<ISearchResult> Search(string searchString, string[] keyWords)
         {
             // result
-            var searchResults = new SearchResults();
+            var searchResults = new SearchResults<ISearchResult>();
 
             if(keyWords != null)
             {
-                var wikiService = new WikipediaService()
-                {
-                    SearchFullDescription = true,
-                    MaxPagesCount = 1
-                };
+                var wikiService = new WikipediaService();
+                wikiService.SearchParameters.Limit = 1;
+                wikiService.SearchParameters.DescriptionType = DescriptionType.WithTags;
 
                 // search keyword definitions
                 foreach (var keyWord in keyWords)
@@ -30,8 +28,7 @@ namespace BrainySearch.Logic.Search.BrainySearchS
                     // search key word definition in the wikipedia
                     var wikiSr = Search(keyWord, wikiService);
                     // add search results in full results list (ignore errors)
-                    searchResults.Results.AddRange(
-                        wikiSr.Results.Select(item => new BrainySearchSearchResult(item) { ParsePage = false }));
+                    searchResults.Results.AddRange(wikiSr.Results);
                 }
             }
 
@@ -39,49 +36,50 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             var sr = Search(searchString);
             // add search results in full results list without dublicates
             searchResults.Results.AddRange(
-                sr.Results.Where(item => !searchResults.Results.Any(it => it.Link == item.Link))
-                .Select(item => new BrainySearchSearchResult(item)));
+                sr.Results.Where(item => !searchResults.Results.Any(it => it.Link == item.Link)));
             // copy error if it is
             searchResults.ErrorMessage = sr.ErrorMessage;
 
             return searchResults;
         }
 
-        public SearchResults Search(string searchString)
+        public override SearchResults<ISearchResult> Search(string searchString)
         {
-            // 1. Google search
-            //if (Search(ref searchResults, searchString, new GoogleService())) return searchResults;
+            // StartPage search
+            var startPageService = new StartPageService();
+            startPageService.SearchParameters.Limit = SearchParameters.Limit;
+            // TODO: uncomment
+            //startPageService.SearchParameters.LoadDescriptions = false;
 
-            // 2. Gigablast
-            //if (Search(ref searchResults, searchString, new GigablastService())) return searchResults;
-
-            // 3. DuckDuckGo
-            //if (Search(ref searchResults, searchString, new DuckDuckGoService())) return searchResults;
-
-            // 4. StartPage
-            return Search(searchString, new StartPageService() { MaxPagesCount = 100 });
+            return Search(searchString, startPageService);
         }
 
-        private SearchResults Search(string searchString, IWebSearchService searchService)
+        #endregion
+
+        #region Private methods
+
+        private SearchResults<TResult> Search<TParameters, TResult>(string searchString, ISearchService<TParameters, TResult> searchService)
+            where TParameters : ISearchParameters
+            where TResult : ISearchResult
         {
             try
             {
-                searchService.Language = Language;
+                // fill search parameters
+                searchService.SearchParameters.Language = SearchParameters.Language;
+                // search
                 var searchResults = searchService.Search(searchString);
-
-                if (!searchResults.HasErrors)
-                {
-                    return searchResults;
-                }
+                // return search result
+                return searchResults;
             }
             catch (Exception ex)
             {
-                var searchResults = new SearchResults();
+                // write error if it is
+                var searchResults = new SearchResults<TResult>();
                 searchResults.ErrorMessage = ex.Message;
                 return searchResults;
             }
-
-            return new SearchResults();
         }
+
+        #endregion
     }
 }

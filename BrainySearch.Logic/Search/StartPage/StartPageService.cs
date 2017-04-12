@@ -11,25 +11,38 @@ using System.Globalization;
 
 namespace BrainySearch.Logic.Search.StartPage
 {
-    public class StartPageService : IStartPageService
+    /// <summary>
+    /// StartPage search service
+    /// </summary>
+    public class StartPageService : SearchService<StartPageParameters, ISearchResult>, IStartPageService
     {
-        public StartPageService()
-        {
-            Language = "en";
-            MaxPagesCount = 10;
-        }
-
-        public string Language { get; set; }
-
-        public int MaxPagesCount { get; set; }
+        #region Private fields
 
         // example: https://s10-eu4.startpage.com/do/search?cmd=process_search&language=english&qid=LELOTLQRSSPO257GFUQJUE&rcount=1&rl=NONE&abp=-1&query=asp.net&cat=web&t=&startat=30
-        public string URL => "https://s10-eu4.startpage.com/do/search";
-        
-        public SearchResults Search(string searchString)
+        private const string URL = "https://s10-eu4.startpage.com/do/search";
+
+        #endregion
+
+        #region Initialization
+
+        public StartPageService() : base()
+        {
+            SearchParameters = new StartPageParameters();
+        }
+
+        public StartPageService(StartPageParameters searchParameters)
+        {
+            SearchParameters = searchParameters;
+        }
+
+        #endregion
+
+        #region Public methods 
+
+        public override SearchResults<ISearchResult> Search(string searchString)
         {
             // result
-            var res = new SearchResults();
+            var res = new SearchResults<ISearchResult>();
 
             try
             {
@@ -39,7 +52,7 @@ namespace BrainySearch.Logic.Search.StartPage
                     // prepare web client
                     webClient.Encoding = System.Text.Encoding.UTF8;
                     // get full language name
-                    var lang = CultureInfo.GetCultureInfo(Language).EnglishName.ToLower();
+                    var lang = CultureInfo.GetCultureInfo(SearchParameters.Language).EnglishName.ToLower();
 
                     // fill attributes
                     NameValueCollection nameValueCollection = new NameValueCollection();
@@ -59,12 +72,12 @@ namespace BrainySearch.Logic.Search.StartPage
                     webClient.QueryString.Add("qid", GetQid(webClient));
 
                     // calculate max pages count -> one StartPage result page contains max 10 results
-                    var maxPagesCount = (int)Math.Round(((double)MaxPagesCount) / 10, 0, MidpointRounding.AwayFromZero);
+                    var pageLimit = (int)Math.Round(((double)SearchParameters.Limit) / 10, 0, MidpointRounding.AwayFromZero);
                     var search = true;
 
-                    for(int iPage = 0; iPage < maxPagesCount; iPage++)
+                    for(int iPage = 0; iPage < pageLimit; iPage++)
                     {
-                        if (1 + iPage * 10 > MaxPagesCount || !search) break;
+                        if (1 + iPage * 10 > SearchParameters.Limit || !search) break;
 
                         // get search result html
                         webClient.QueryString.Set("startat", (iPage * 10).ToString());
@@ -73,7 +86,7 @@ namespace BrainySearch.Logic.Search.StartPage
                         // get all results
                         for (int i = 1 + iPage * 10; ; i++)
                         {
-                            if (i > MaxPagesCount) break;
+                            if (i > SearchParameters.Limit) break;
                             // get result
                             var resultHtml = ParserBase.GetInnerHtmlByTagId(html, "result" + i);
                             // if result is not found exit for
@@ -87,11 +100,15 @@ namespace BrainySearch.Logic.Search.StartPage
                                 search = false;
                                 break;
                             }
-                            // parse other parts
-                            var title = ParserBase.GetInnerHtmlByTagClassName(resultHtml, "result_url_heading");
-                            var description = ParserBase.GetInnerHtmlByTagClassName(resultHtml, "desc clk");
                             // add result to collection
-                            res.Results.Add(new SearchResult() { Title = title, Description = description, Link = link });
+                            res.Results.Add(new SearchResult()
+                            {
+                                Title = ParserBase.GetInnerHtmlByTagClassName(resultHtml, "result_url_heading"),
+                                Description = SearchParameters.LoadDescriptions 
+                                            ? ParserBase.GetInnerHtmlByTagClassName(resultHtml, "desc clk") 
+                                            : null,
+                                Link = link
+                            });
                         }
                     }
                 } 
@@ -104,6 +121,10 @@ namespace BrainySearch.Logic.Search.StartPage
             return res;
         }
 
+        #endregion
+
+        #region Private methods
+
         private string GetQid(WebClient webClient)
         {
             var html = webClient.DownloadString(URL);
@@ -113,5 +134,7 @@ namespace BrainySearch.Logic.Search.StartPage
 
             return ParserBase.GetAttribute(qidHtml, "value");
         }
+
+        #endregion
     }
 }

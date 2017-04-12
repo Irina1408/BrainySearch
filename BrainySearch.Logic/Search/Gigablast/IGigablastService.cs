@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BrainySearch.Logic.Search.Gigablast
 {
-    public interface IGigablastService : IWebSearchService
+    public interface IGigablastService : ISearchService
     {
     }
 }

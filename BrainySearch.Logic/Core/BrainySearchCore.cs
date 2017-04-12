@@ -23,22 +23,23 @@ namespace BrainySearch.Logic.Core
         public BrainySearchCore()
         {
             brainySearchService = new BrainySearchService();
+            brainySearchService.SearchParameters.Limit = 100;
         }
 
         #endregion
 
         #region Public methods
 
-        public SearchResults BrainySearch(string searchString, string[] keyWords)
+        public SearchResults<ISearchResult> BrainySearch(string searchString, string[] keyWords)
         {
-            // detect search language
+            // detect search string language
             DetectLanguage(searchString);
             // get search result
             var searchResults = brainySearchService.Search(searchString, keyWords);
             // fix result links
-            FixLinks(ref searchResults);
+            FixLinks(searchResults);
             // fill full descriptions
-            FillDescriptions(ref searchResults);
+            FillDescriptions(searchResults);
 
             return searchResults;
         }
@@ -49,11 +50,11 @@ namespace BrainySearch.Logic.Core
 
         private void DetectLanguage(string text)
         {
-            brainySearchService.Language = LangDetection.LangDetector.DetectLanguage(text);
+            brainySearchService.SearchParameters.Language = LangDetection.LangDetector.Detect(text);
             //CultureInfo.GetCultureInfo(LanguageCode).EnglishName;
         }
 
-        private void FixLinks(ref SearchResults searchResults)
+        private void FixLinks(SearchResults<ISearchResult> searchResults)
         {
             foreach (var sr in searchResults.Results)
             {
@@ -68,7 +69,7 @@ namespace BrainySearch.Logic.Core
             }
         }
 
-        private void FillDescriptions(ref SearchResults searchResults)
+        private void FillDescriptions(SearchResults<ISearchResult> searchResults)
         {
             // init parsers
             var wikiParser = new WikipediaParser();
@@ -77,8 +78,9 @@ namespace BrainySearch.Logic.Core
                 // prepare web client
                 webClient.Encoding = System.Text.Encoding.UTF8;
 
-                foreach (var r in searchResults.Results
-                .Where(item => (item as BrainySearchSearchResult) != null && (item as BrainySearchSearchResult).ParsePage))
+                //foreach (var r in searchResults.Results.Where(item => item.Description == null))
+                // TODO: to be removed. only for tests. previous row uncomment
+                foreach (var r in searchResults.Results.Where(item => item.Link.Contains("wikipedia.org")))
                 {
                     // wikipedia page
                     if (r.Link.Contains("wikipedia.org"))

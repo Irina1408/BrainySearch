@@ -13,24 +13,32 @@ namespace BrainySearch.Logic.Search.DuckDuckGo
     /// <summary>
     /// DOES NOT WORK
     /// </summary>
-    public class DuckDuckGoService : IDuckDuckGoService
+    public class DuckDuckGoService : SearchService, IDuckDuckGoService
     {
-        public DuckDuckGoService()
+        #region Private fields
+
+        private const string URL = "https://duckduckgo.com/";
+
+        #endregion
+
+        #region Initialization
+
+        public DuckDuckGoService() : base()
         {
-            Language = "en";
-            MaxPagesCount = 30;
+            SearchParameters.Limit = 30;
         }
 
-        public string Language { get; set; }
+        public DuckDuckGoService(ISearchParameters searchParameters) : base(searchParameters)
+        { }
 
-        public int MaxPagesCount { get; set; }
+        #endregion
 
-        public string URL => "https://duckduckgo.com/";
+        #region Public methods 
 
-        public SearchResults Search(string searchString)
+        public override SearchResults<ISearchResult> Search(string searchString)
         {
             // result
-            var res = new SearchResults();
+            var res = new SearchResults<ISearchResult>();
 
             try
             {
@@ -73,5 +81,7 @@ namespace BrainySearch.Logic.Search.DuckDuckGo
 
             return res;
         }
+
+        #endregion
     }
 }

@@ -8,12 +8,20 @@ namespace BrainySearch.Logic.LangDetection
 {
     public class LangDetector
     {
-        public static string DetectLanguage(string text)
+        public static string Detect(string text)
         {
             var detector = new LanguageDetection.LanguageDetector();
             //detector.AddAllLanguages();
             detector.AddLanguages("ru", "en", "uk");
             return detector.Detect(text);
+        }
+
+        public static List<string> DetectAll(string text)
+        {
+            var detector = new LanguageDetection.LanguageDetector();
+            //detector.AddAllLanguages();
+            detector.AddLanguages("ru", "en", "uk");
+            return detector.DetectAll(text).OrderByDescending(item => item.Probability).Select(item => item.Language).ToList();
         }
     }
 }

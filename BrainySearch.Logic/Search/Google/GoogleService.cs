@@ -16,30 +16,24 @@ namespace BrainySearch.Logic.Search
     /// Generate api key -> https://console.developers.google.com
     /// Generate cx -> https://cse.google.com/cse/manage/all
     /// </summary>
-    public class GoogleService : IGoogleService
+    public class GoogleService : SearchService, IGoogleService
     {
+        #region Private fields
+
         // example: 015536730667522181619:rlum22alhai
         private const string CX = "";
         // example: AIzaSyCeDqFm6I3CrUnePq2dZxrrIlorR77gpw8
         private const string API_KEY = "";
-        
-        public GoogleService()
+
+        #endregion
+
+        #region Public methods  
+
+        public override SearchResults<ISearchResult> Search(string searchString)
         {
-            Language = "en";
-            MaxPagesCount = 10;
-        }
+            var res = new SearchResults<ISearchResult>();
 
-        public string Language { get; set; }
-
-        public int MaxPagesCount { get; set; }
-
-        public string URL => "https://www.google.com/search";
-
-        public SearchResults Search(string searchString)
-        {
-            var res = new SearchResults();
-
-            var sr = new GoogleCSE.GoogleSearch(CX, Language, null, 10, MaxPagesCount, 1, GoogleSearchMethod.CSE, API_KEY);
+            var sr = new GoogleCSE.GoogleSearch(CX, SearchParameters.Language, null, 10, SearchParameters.Limit, 1, GoogleSearchMethod.CSE, API_KEY);
             try
             {
                 var r = sr.Search(searchString);
@@ -62,5 +56,7 @@ namespace BrainySearch.Logic.Search
 
             return res;
         }
+
+        #endregion
     }    
 }

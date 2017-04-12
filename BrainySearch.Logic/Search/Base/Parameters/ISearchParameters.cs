@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace BrainySearch.Logic.Search.Base
 {
-    public interface ISearchService
+    /// <summary>
+    /// Search parameters
+    /// </summary>
+    public interface ISearchParameters
     {
         /// <summary>
         /// Language code in ISO 639-1
@@ -14,8 +17,8 @@ namespace BrainySearch.Logic.Search.Base
         string Language { get; set; }
 
         /// <summary>
-        /// Search info
+        /// Max results count
         /// </summary>
-        SearchResults Search(string searchString);
+        int Limit { get; set; }
     }
 }
