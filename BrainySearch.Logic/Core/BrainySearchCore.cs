@@ -85,7 +85,10 @@ namespace BrainySearch.Logic.Core
                     // wikipedia page
                     if (r.Link.Contains("wikipedia.org"))
                     {
-                        r.Description = wikiParser.GetDefinitionHtml(webClient.DownloadString(r.Link));
+                        // get html of detinition from wikipedia
+                        r.Description = wikiParser.GetDefinitionHtml(webClient.DownloadString(r.Link))
+                            // fix links in html description
+                            .Replace("\"/wiki/", string.Format("\"https://{0}.wikipedia.org/wiki/", brainySearchService.SearchParameters.Language));
                     }
                 }
             }

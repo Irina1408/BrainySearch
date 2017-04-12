@@ -142,7 +142,9 @@ namespace BrainySearch.Logic.Search.Wikipedia
         private string GetDescriptionWithTags(WebClient webClient, string link)
         {
             var wikiParser = new WikipediaParser();
-            var html = webClient.DownloadString(link);
+            var html = webClient.DownloadString(link)
+                // fix links in html description
+                .Replace("\"/wiki/", string.Format("\"https://{0}.wikipedia.org/wiki/", SearchParameters.Language));
 
             return wikiParser.GetDefinitionHtml(html);
         }
