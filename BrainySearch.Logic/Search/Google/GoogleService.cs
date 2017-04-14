@@ -39,7 +39,7 @@ namespace BrainySearch.Logic.Search
                 var r = sr.Search(searchString);
                 foreach (var item in r)
                 {
-                    res.Results.Add(new SearchResult() { Title = item.Title, Link = item.Url, Description = item.Description });
+                    res.Results.Add(new SearchResult() { Title = item.Title, Link = item.Url, Text = item.Description });
                 }
             }
             catch (WebException ex)

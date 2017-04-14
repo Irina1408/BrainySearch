@@ -14,12 +14,12 @@ namespace BrainySearch.Logic.Search.StartPage
     {
         public StartPageParameters() : base()
         {
-            LoadDescriptions = true;
+            LoadText = true;
         }
 
         /// <summary>
-        /// Returns true if result descriptions should be loaded
+        /// Returns true if result text should be loaded
         /// </summary>
-        public bool LoadDescriptions { get; set; }
+        public bool LoadText { get; set; }
     }
 }

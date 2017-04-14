@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 namespace BrainySearch.Logic.Search.Wikipedia
 {
     /// <summary>
-    /// Description type of result description
+    /// Text type of result text
     /// </summary>
-    public enum DescriptionType
+    public enum TextType
     {
         // First sentence
-        Short,
-        Full,
-        WithTags
+        ShortDescription,
+        FullDescription,
+        HtmlPagePart
     }
 
     /// <summary>
@@ -25,12 +25,12 @@ namespace BrainySearch.Logic.Search.Wikipedia
     {
         public WikipediaParameters() : base()
         {
-            DescriptionType = DescriptionType.Short;
+            TextType = TextType.ShortDescription;
         }
 
         /// <summary>
-        /// Result search description type
+        /// Result search text type
         /// </summary>
-        public DescriptionType DescriptionType { get; set; }
+        public TextType TextType { get; set; }
     }
 }

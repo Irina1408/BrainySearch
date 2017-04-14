@@ -17,9 +17,9 @@ namespace BrainySearch.Logic.Search.Base
         string Title { get; set; }
 
         /// <summary>
-        /// Result description (optional)
+        /// Result text (optional)
         /// </summary>
-        string Description { get; set; }
+        string Text { get; set; }
 
         /// <summary>
         /// Result source link

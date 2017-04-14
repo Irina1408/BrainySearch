@@ -52,7 +52,7 @@ namespace BrainySearch.Logic.Search.Gigablast
 
                 foreach (var r in resp.results)
                 {
-                    res.Results.Add(new SearchResult() { Title = r.title, Description = r.sum, Link = r.url });
+                    res.Results.Add(new SearchResult() { Title = r.title, Text = r.sum, Link = r.url });
                 }
 
             }

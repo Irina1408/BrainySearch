@@ -20,7 +20,7 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             {
                 var wikiService = new WikipediaService();
                 wikiService.SearchParameters.Limit = 1;
-                wikiService.SearchParameters.DescriptionType = DescriptionType.WithTags;
+                //wikiService.SearchParameters.TextType = TextType.HtmlPagePart;
 
                 // search keyword definitions
                 foreach (var keyWord in keyWords)
@@ -48,8 +48,7 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             // StartPage search
             var startPageService = new StartPageService();
             startPageService.SearchParameters.Limit = SearchParameters.Limit;
-            // TODO: uncomment
-            //startPageService.SearchParameters.LoadDescriptions = false;
+            startPageService.SearchParameters.LoadText = false;
 
             return Search(searchString, startPageService);
         }

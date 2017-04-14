@@ -6,18 +6,26 @@ using System.Threading.Tasks;
 
 namespace BrainySearch.Logic.Parser
 {
-    using CsQuery;
+    using Base;
 
-    public class WikipediaParser : ParserBase
+    public class WikipediaParser : TextParser
     {
+        /// <summary>
+        /// Parse html and returns html string
+        /// </summary>
+        public override string Parse(string html)
+        {
+            return GetDefinitionHtml(html);
+        }
+
         /// <summary>
         /// Returns part of page with definition (part before Contents)
         /// </summary>
         /// <param name="html">Full html of wikipedia page</param>
         /// <returns></returns>
-        public string GetDefinitionHtml(string html)
+        private string GetDefinitionHtml(string html)
         {
-            var contentTextDom = GetDomObjectByTagId(html, "mw-content-text");
+            var contentTextDom = HtmlParseHelper.GetDomObjectByTagId(html, "mw-content-text");
             var stringBuilder = new StringBuilder();
 
             foreach(var tag in contentTextDom.ChildNodes)

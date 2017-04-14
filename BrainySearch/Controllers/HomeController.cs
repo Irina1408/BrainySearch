@@ -36,7 +36,7 @@ namespace BrainySearch.Controllers
         [HttpGet]
         public ActionResult Search(string lectureTheme, string[] keyWords)
         {
-            var res = new List<SearchResultViewModel>();
+            var res = new SearchResultsViewModel();
             var searchService = new BrainySearchCore();
             var searchResult = searchService.BrainySearch(lectureTheme, keyWords);
 
@@ -53,10 +53,10 @@ namespace BrainySearch.Controllers
                     if (shortLink.StartsWith("http://"))
                         shortLink = shortLink.Substring("http://".Length, shortLink.Length - "http://".Length);
 
-                    res.Add(new SearchResultViewModel
+                    res.Results.Add(new SearchResultViewModel
                     {
                         Title = sr.Title,
-                        Text = sr.Description,
+                        Text = sr.Html,
                         AddToLecture = true,
                         SourceLink = sr.Link,
                         ShortLink = shortLink
@@ -66,7 +66,7 @@ namespace BrainySearch.Controllers
             // for tests
             else
             {
-                res.Add(new SearchResultViewModel { Text = searchResult.ErrorMessage });
+                res.ErrorMessage = searchResult.ErrorMessage;
             }          
 
             return Content(JsonConvert.SerializeObject(res));

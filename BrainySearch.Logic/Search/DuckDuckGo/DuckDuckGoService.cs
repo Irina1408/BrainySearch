@@ -62,15 +62,15 @@ namespace BrainySearch.Logic.Search.DuckDuckGo
                 for(int i = 0; ; i++)
                 {
                     // get result
-                    var resultHtml = ParserBase.GetInnerHtmlByTagId(html, "r1-" + i);
+                    var resultHtml = HtmlParseHelper.GetInnerHtmlByTagId(html, "r1-" + i);
                     // if result is not found exit for
                     if (string.IsNullOrEmpty(resultHtml)) break;
                     // parse result
-                    var title = ParserBase.GetInnerHtmlByTagClassName(resultHtml, "result__a");
-                    var description = ParserBase.GetInnerHtmlByTagClassName(resultHtml, "result__snippet");
-                    var link = ParserBase.GetAttributeByTagClassName(resultHtml, "result__url", "href");
+                    var title = HtmlParseHelper.GetInnerHtmlByTagClassName(resultHtml, "result__a");
+                    var text = HtmlParseHelper.GetInnerHtmlByTagClassName(resultHtml, "result__snippet");
+                    var link = HtmlParseHelper.GetAttributeByTagClassName(resultHtml, "result__url", "href");
                     // add result to collection
-                    res.Results.Add(new SearchResult() { Title = title, Description = description, Link = link });
+                    res.Results.Add(new SearchResult() { Title = title, Text = text, Link = link });
                 }
 
             }

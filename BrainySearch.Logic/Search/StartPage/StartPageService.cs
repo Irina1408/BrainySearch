@@ -88,11 +88,11 @@ namespace BrainySearch.Logic.Search.StartPage
                         {
                             if (i > SearchParameters.Limit) break;
                             // get result
-                            var resultHtml = ParserBase.GetInnerHtmlByTagId(html, "result" + i);
+                            var resultHtml = HtmlParseHelper.GetInnerHtmlByTagId(html, "result" + i);
                             // if result is not found exit for
                             if (string.IsNullOrEmpty(resultHtml)) break;
                             // parse link
-                            var link = ParserBase.GetAttributeByTagId(resultHtml, "title_" + i, "href");
+                            var link = HtmlParseHelper.GetAttributeByTagId(resultHtml, "title_" + i, "href");
                             // check link does not exist in the collection
                             if(res.Results.Any(item => item.Link == link))
                             {
@@ -103,9 +103,9 @@ namespace BrainySearch.Logic.Search.StartPage
                             // add result to collection
                             res.Results.Add(new SearchResult()
                             {
-                                Title = ParserBase.GetInnerHtmlByTagClassName(resultHtml, "result_url_heading"),
-                                Description = SearchParameters.LoadDescriptions 
-                                            ? ParserBase.GetInnerHtmlByTagClassName(resultHtml, "desc clk") 
+                                Title = HtmlParseHelper.GetInnerHtmlByTagClassName(resultHtml, "result_url_heading"),
+                                Text = SearchParameters.LoadText 
+                                            ? HtmlParseHelper.GetInnerHtmlByTagClassName(resultHtml, "desc clk") 
                                             : null,
                                 Link = link
                             });
@@ -128,11 +128,11 @@ namespace BrainySearch.Logic.Search.StartPage
         private string GetQid(WebClient webClient)
         {
             var html = webClient.DownloadString(URL);
-            var qidHtml = ParserBase.GetHtmlByTagNameAndAttribute(html, "input", "name", "qid");
+            var qidHtml = HtmlParseHelper.GetHtmlByTagNameAndAttribute(html, "input", "name", "qid");
 
             if (string.IsNullOrEmpty(qidHtml)) return null;
 
-            return ParserBase.GetAttribute(qidHtml, "value");
+            return HtmlParseHelper.GetAttribute(qidHtml, "value");
         }
 
         #endregion

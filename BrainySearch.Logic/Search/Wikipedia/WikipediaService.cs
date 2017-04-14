@@ -77,7 +77,7 @@ namespace BrainySearch.Logic.Search.Wikipedia
                         res.Results.Add(new SearchResult()
                         {
                             Title = titles[i].ToString(),
-                            Description = descriptions[i].ToString(),
+                            Text = descriptions[i].ToString(),
                             Link = links[i].ToString()
                         });
                     }
@@ -101,9 +101,9 @@ namespace BrainySearch.Logic.Search.Wikipedia
         private void RefillDescriptions(WebClient webClient, SearchResults<ISearchResult> res)
         {
             // refill descriptions
-            switch (SearchParameters.DescriptionType)
+            switch (SearchParameters.TextType)
             {
-                case DescriptionType.Full:
+                case TextType.FullDescription:
                     // prepare web client
                     webClient.QueryString.Set("action", "query");
                     webClient.QueryString.Add("prop", "extracts");
@@ -113,16 +113,16 @@ namespace BrainySearch.Logic.Search.Wikipedia
                     // fill descriptions
                     foreach (var r in res.Results)
                     {
-                        r.Description = GetFullDescription(webClient, r.Title);
+                        r.Text = GetFullDescription(webClient, r.Title);
                     }
                     break;
 
-                case DescriptionType.WithTags:
+                case TextType.HtmlPagePart:
                     webClient.QueryString.Clear();
-                    // fill descriptions
+                    // fill text
                     foreach (var r in res.Results)
                     {
-                        r.Description = GetDescriptionWithTags(webClient, r.Link);
+                        r.Text = GetHtmlPagePart(webClient, r.Link);
                     }
                     break;
             }
@@ -139,14 +139,12 @@ namespace BrainySearch.Logic.Search.Wikipedia
             return res["query"]["pages"].First.First["extract"].ToString();
         }
 
-        private string GetDescriptionWithTags(WebClient webClient, string link)
+        private string GetHtmlPagePart(WebClient webClient, string link)
         {
             var wikiParser = new WikipediaParser();
-            var html = webClient.DownloadString(link)
-                // fix links in html description
-                .Replace("\"/wiki/", string.Format("\"https://{0}.wikipedia.org/wiki/", SearchParameters.Language));
+            var html = webClient.DownloadString(link);
 
-            return wikiParser.GetDefinitionHtml(html);
+            return wikiParser.Parse(html);
         }
 
         #endregion

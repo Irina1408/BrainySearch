@@ -8,7 +8,7 @@ namespace BrainySearch.Logic.Parser
 {
     using CsQuery;
 
-    public class ParserBase
+    public static class HtmlParseHelper
     {
         #region Get inner html
 
@@ -24,12 +24,12 @@ namespace BrainySearch.Logic.Parser
         /// <summary>
         /// Returns inner html of tag with entered class name
         /// </summary>
-        public static string GetInnerHtmlByTagClassName(string html, string className)
+        public static string GetInnerHtmlByTagClassName(string html, string className, bool strictEquality = true)
         {
             var cq = CQ.Create(html);
             for(int i = 0; i < cq.Length ; i++)
             {
-                if(cq[i].ClassName == className)
+                if(strictEquality && cq[i].ClassName == className || !strictEquality && cq[i].ClassName.Contains(className))
                 {
                     return cq[i].InnerHTML;
                 }
@@ -129,12 +129,12 @@ namespace BrainySearch.Logic.Parser
 
         #endregion
 
-        #region Protected methods
+        #region Get Dom Object
 
         /// <summary>
         /// Returns dom object of tag with entered class name
         /// </summary>
-        protected static IDomObject GetDomObjectByTagClassName(string html, string className)
+        public static IDomObject GetDomObjectByTagClassName(string html, string className)
         {
             var cq = CQ.Create(html);
             for (int i = 0; i < cq.Length; i++)
@@ -159,7 +159,7 @@ namespace BrainySearch.Logic.Parser
             return null;
         }
 
-        protected static IDomObject GetDomObjectByTagId(string html, string id)
+        public static IDomObject GetDomObjectByTagId(string html, string id)
         {
             var cq = CQ.Create(html);
             return cq.Document.GetElementById(id);

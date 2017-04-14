@@ -64,8 +64,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\BrainySearchCore.cs" />
+    <Compile Include="Core\BrainySearchResult.cs" />
     <Compile Include="LangDetection\LangDetector.cs" />
-    <Compile Include="Parser\ParserBase.cs" />
+    <Compile Include="Parser\ArticleParser.cs" />
+    <Compile Include="Parser\Base\TextParser.cs" />
+    <Compile Include="Parser\Utils\HtmlParseHelper.cs" />
+    <Compile Include="Parser\Base\IParser.cs" />
     <Compile Include="Parser\WikipediaParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search\Base\Parameters\ISearchParameters.cs" />

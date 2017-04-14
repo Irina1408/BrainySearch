@@ -31,7 +31,8 @@
     cursor: pointer;
 }
 
-.remove-icon, .remove-icon:active {
+.remove-icon, 
+.remove-icon:active {
     position: absolute;
     background-image: url("Images/Remove.png")!important; 
     background-repeat: no-repeat;  
