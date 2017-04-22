@@ -3,6 +3,7 @@ using BrainySearch.Logic.Search.Base;
 using BrainySearch.Logic.Search.BrainySearchS;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -122,10 +123,10 @@ namespace BrainySearch.Logic.Core
 
         private void Parse(SearchResults<BrainySearchResult> searchResults)
         {
-            // 1. Get html
+            // 1. Get text
             ParsePageHtml(searchResults);
-            // 2. Fix results
-            FixParseResult(searchResults);
+            // 2. Build html
+            BuildResultHtml(searchResults);
         }
 
         /// <summary>
@@ -136,55 +137,65 @@ namespace BrainySearch.Logic.Core
             // init parsers
             var wikiParser = new WikipediaParser();
             var articleParser = new ArticleParser();
-
-            using (var webClient = new WebClient())
+            
+            foreach (var r in searchResults.Results)
             {
-                // prepare web client
-                webClient.Encoding = System.Text.Encoding.UTF8;
-
-                foreach (var r in searchResults.Results)
+                try
                 {
-                    try
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(r.Link);
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                        continue;
+
+                    Stream receiveStream = response.GetResponseStream();
+                    StreamReader readStream = null;
+
+                    if (response.CharacterSet == null)
                     {
-                        var pageHtml = webClient.DownloadString(r.Link);
-                        // wikipedia page
-                        if (r.Link.Contains("wikipedia.org"))
-                        {
-                            // get html of detinition from wikipedia
-                            r.Html = wikiParser.Parse(pageHtml);
-                        }
-                        else
-                        {
-                            // parse unknown page html
-                            r.Html = articleParser.Parse(pageHtml);
-                        }
+                        readStream = new StreamReader(receiveStream);
                     }
-                    catch (WebException ex)
+                    else
                     {
-                        // TODO: remove
-                        r.Html = "Web exception: " + ex.Message;
+                        readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
                     }
-                    catch (Exception ex)
+
+                    string data = readStream.ReadToEnd();
+
+                    response.Close();
+                    readStream.Close();
+                    
+                    // wikipedia page
+                    if (r.Link.Contains("wikipedia.org"))
                     {
-                        // do nothing
-                        // TODO: remove
-                        r.Html = "Error html parsing: " + ex.Message;
-                    }                    
+                        // get text of detinition from wikipedia
+                        r.Text = wikiParser.Parse(data);
+                    }
+                    else
+                    {
+                        // parse unknown page html
+                        r.Text = articleParser.Parse(data);
+                    }
                 }
-            }   
+                catch (WebException ex)
+                {
+                    // TODO: remove
+                    r.Text = "Web exception: " + ex.Message;
+                }
+                catch (Exception ex)
+                {
+                    // do nothing
+                    // TODO: remove
+                    r.Text = "Error html parsing: " + ex.Message;
+                }
+            }  
         }
 
-        private void FixParseResult(SearchResults<BrainySearchResult> searchResults)
+        private void BuildResultHtml(SearchResults<BrainySearchResult> searchResults)
         {
-            // fix links in html
-            foreach (var r in searchResults.Results.Where(item => !string.IsNullOrEmpty(item.Html) && item.Html.Contains("href=\"/")))
+            foreach (var r in searchResults.Results.Where(item => !string.IsNullOrEmpty(item.Text)))
             {
-                // get site domain
-                var domain = r.Link.Substring(0, r.Link.IndexOf("/") + 1);
-
-                // fix links in html descriptions
-                r.Html = r.Html
-                    .Replace("href=\"/", string.Format("href=\"{0}/", domain));
+                r.Html = string.Format("<p>{0}</p>", r.Text.Replace("\n", "</p><p>"));
             }
         }
 

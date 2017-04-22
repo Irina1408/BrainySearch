@@ -10,6 +10,8 @@ namespace BrainySearch.Logic.Parser
 
     public static class HtmlParseHelper
     {
+        private static string[] newLineItems = new[] { "li", "h1", "h2", "h3", "h4", "h5", "p", "br" };
+
         #region Get inner html
 
         /// <summary>
@@ -119,12 +121,39 @@ namespace BrainySearch.Logic.Parser
         #endregion
 
         #region Get content
-
-        public static string GetFullContent(string html)
+        
+        public static string GetInnerText(IDomObject dom)
         {
-            var cq = CQ.Create(html);
+            if (dom.HasChildren)
+            {
+                var sb = new StringBuilder();
 
-            return cq.Document.InnerText;
+                foreach (var ch in dom.ChildNodes)
+                {
+                    if (newLineItems.Contains(ch.NodeName.ToLower()))
+                    {
+                        if (ch.NodeName.ToLower() == "li")
+                            sb.AppendLine(" - " + GetInnerText(ch));
+                        else
+                            sb.AppendLine(GetInnerText(ch));
+                    }
+                    else
+                        sb.Append(GetInnerText(ch));
+
+                }
+
+                return sb.ToString();
+            }
+            else
+            {
+                if (dom.InnerTextAllowed)
+                    return dom.InnerText;
+                else if (dom.NodeType == NodeType.TEXT_NODE)
+                    return dom.NodeValue;
+
+            }
+
+            return null;
         }
 
         #endregion

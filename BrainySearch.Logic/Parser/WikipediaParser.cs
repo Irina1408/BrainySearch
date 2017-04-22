@@ -11,19 +11,18 @@ namespace BrainySearch.Logic.Parser
     public class WikipediaParser : TextParser
     {
         /// <summary>
-        /// Parse html and returns html string
+        /// Parse wikipedia page html and returns text string
         /// </summary>
         public override string Parse(string html)
         {
-            return GetDefinitionHtml(html);
+            return GetDefinition(html);
         }
 
         /// <summary>
         /// Returns part of page with definition (part before Contents)
         /// </summary>
         /// <param name="html">Full html of wikipedia page</param>
-        /// <returns></returns>
-        private string GetDefinitionHtml(string html)
+        private string GetDefinition(string html)
         {
             var contentTextDom = HtmlParseHelper.GetDomObjectByTagId(html, "mw-content-text");
             var stringBuilder = new StringBuilder();
@@ -34,7 +33,7 @@ namespace BrainySearch.Logic.Parser
 
                 if (tag.NodeName.ToLower() == "p")
                 {
-                    stringBuilder.AppendLine(tag.Render());
+                    stringBuilder.AppendLine(HtmlParseHelper.GetInnerText(tag));
                 }
             }
 

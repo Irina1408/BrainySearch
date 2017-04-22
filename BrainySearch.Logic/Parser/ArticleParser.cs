@@ -9,19 +9,21 @@ namespace BrainySearch.Logic.Parser
 {
     using BrainySearch.Logic.Parser.Base;
     using CsQuery;
+    using System.Web;
 
     public class ArticleParser : TextParser
     {
         #region IParser implementation
 
         /// <summary>
-        /// Parse html and returns html string
+        /// Parse html and returns result text
         /// </summary>
         public override string Parse(string html)
         {
             // clean html
             html = RemoveEmptySpaces(html);
             html = RemoveWhiteSpaces(html);
+            html = RemoveComments(html);
 
             // cq main html page document
             var document = CQ.Create(html).Document;
@@ -43,30 +45,22 @@ namespace BrainySearch.Logic.Parser
 
             if (res != null && res.Any())
             {
-                // loop on every result with children
+                // loop on all results with children
                 foreach(var r in res.Where(item => item.HasChildren))
                 {                    
                     // find all tags with children tags "p"
-                    foreach(var pTag in SearchChildren(r, false, "p"))
+                    foreach(var pTag in SearchChildren(r, true, "p"))
                     {
-                        // write all children
-                        //foreach (var ch in pTag.ChildNodes)
-                        //{
-                        //    if (ch.InnerHtmlAllowed)
-                        //        sb.AppendLine(ch.Render());
-                        //}
-                        if (pTag.InnerHtmlAllowed)
-                            sb.AppendLine(pTag.Render());
+                        sb.AppendLine(HttpUtility.HtmlDecode(HtmlParseHelper.GetInnerText(pTag)));
                     }
                 }
             }
             else
             {
                 // get all tags with text
-                foreach (var ch in SearchChildren(bodyDom, false, "p"))
+                foreach (var ch in SearchChildren(bodyDom, true, "p"))
                 {
-                    if (ch.InnerHtmlAllowed)
-                        sb.AppendLine(ch.Render());
+                    sb.AppendLine(HttpUtility.HtmlDecode(HtmlParseHelper.GetInnerText(ch)));
                 }
             }
 
@@ -90,19 +84,24 @@ namespace BrainySearch.Logic.Parser
             return text.Trim();
         }
 
+        protected string RemoveComments(string html)
+        {
+            if (string.IsNullOrEmpty(html)) return string.Empty;
+            return CQ.Create(html).Render(DomRenderingOptions.RemoveComments);
+        }
+
         protected IEnumerable<IDomObject> SearchChildren(IDomObject dom, bool tagNamesIsChildTags, params string[] tagNames)
         {
-            if (!dom.HasChildren || tagNames == null || !tagNames.Any()) return Enumerable.Empty<IDomObject>();
+            if (!dom.HasChildren || tagNames == null || !tagNames.Any() || !IsValidForSearchDom(dom)) return Enumerable.Empty<IDomObject>();
 
             var results = new List<IDomObject>();
 
             if (tagNamesIsChildTags && dom.HasChildren && dom.ChildNodes.Any(ch => tagNames.Any(item => item == ch.NodeName.ToLower())))
                 results.Add(dom);
-
-            if (dom.HasChildren)
+            else if(dom.HasChildren)
                 foreach (var childNode in dom.ChildNodes)
                 {
-                    if (!tagNamesIsChildTags && tagNames.Contains(childNode.NodeName))
+                    if (!tagNamesIsChildTags && tagNames.Contains(childNode.NodeName.ToLower()))
                         results.Add(childNode);
                     else if (childNode.HasChildren)
                         results.AddRange(SearchChildren(childNode, tagNamesIsChildTags, tagNames));
@@ -113,6 +112,8 @@ namespace BrainySearch.Logic.Parser
 
         protected IEnumerable<IDomObject> SearchChildren(IDomObject dom, string patternID = null, string patternClass = null)
         {
+            if (!IsValidForSearchDom(dom)) return Enumerable.Empty<IDomObject>();
+
             List<IDomObject> result = new List<IDomObject>();
             foreach (IDomObject childNode in dom.ChildNodes)
             {
@@ -121,11 +122,26 @@ namespace BrainySearch.Logic.Parser
 
                 if (matchById || matchByClass)
                     result.Add(childNode);
-
-                if (childNode.HasChildren)
+                else if (childNode.HasChildren)
                     result.AddRange(SearchChildren(childNode, patternID, patternClass));
             }
             return result;
+        }
+
+        protected bool IsValidForSearchDom(IDomObject dom)
+        {
+            string[] excludedFromSearchItems = new[] { "footer" };
+
+            if (!string.IsNullOrEmpty(dom.Id) && excludedFromSearchItems.Any(item => dom.Id.ToLower().Contains(item)))
+                return false;
+
+            if (!string.IsNullOrEmpty(dom.ClassName) && excludedFromSearchItems.Any(item => dom.ClassName.ToLower().Contains(item)))
+                return false;
+
+            if (excludedFromSearchItems.Any(item => dom.NodeName.ToLower().Contains(item)))
+                return false;
+
+            return true;
         }
 
         protected bool NodeHasAttribute(IDomObject dom, string attribute, string pattern)
