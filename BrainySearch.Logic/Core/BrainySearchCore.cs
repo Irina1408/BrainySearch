@@ -25,7 +25,7 @@ namespace BrainySearch.Logic.Core
         {
             brainySearchService = new BrainySearchService();
             // TODO: should be unlimited
-            brainySearchService.SearchParameters.Limit = 10;
+            brainySearchService.SearchParameters.Limit = 100;
         }
 
         #endregion
