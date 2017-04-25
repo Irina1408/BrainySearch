@@ -57,15 +57,12 @@ namespace BrainySearch.Logic.Core
             // 2. Search links by search string
             var sr = brainySearchService.Search(searchString, keyWords);
             // 3. Create SearchResults<BrainySearchResult>
-            var searchResults = new SearchResults<BrainySearchResult>();
-            searchResults.ErrorMessage = sr.ErrorMessage;
+            var searchResults = new SearchResults<BrainySearchResult>() { ErrorMessage = sr.ErrorMessage };
             searchResults.Results.AddRange(
                 sr.Results.Select(item => new BrainySearchResult()
                 {
                     Title = item.Title,
-                    Link = item.Link,
-                    Text = item.Text,    // TODO: remove this line,
-                    Html = item.Text    // TODO: remove this line
+                    Link = item.Link
                 }));
             // 4. Remove extraneous links
             RemoveExtraneousLinks(searchResults);
@@ -107,12 +104,13 @@ namespace BrainySearch.Logic.Core
         /// </summary>
         private void RemoveExtraneousLinks(SearchResults<BrainySearchResult> searchResults)
         {
-            // remove forums
-            searchResults.Results.RemoveAll(item => item.Link.Contains("forum"));
+            // remove forums and youtube videos
+            var linkToRemove = new[] { "forum", "youtube.com" };
+            searchResults.Results.RemoveAll(item => linkToRemove.Any(l => item.Link.Contains(l)));
 
             // TODO: make it generic
             // remove links to file download
-            var fileExtensions = new string[] { ".doc", ".docx", ".xls", ".xlsx", ".pdf" };
+            var fileExtensions = new string[] { ".doc", ".docx", ".xls", ".xlsx", ".pdf", ".ppt" };
             foreach(var ext in fileExtensions)
                 searchResults.Results.RemoveAll(item => item.Link.EndsWith(ext));
         }
@@ -142,40 +140,11 @@ namespace BrainySearch.Logic.Core
             {
                 try
                 {
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(r.Link);
-                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    string data = GetHtmlResult(r.Link);
+                    if (string.IsNullOrEmpty(data)) continue;
 
-                    if (response.StatusCode != HttpStatusCode.OK)
-                        continue;
-
-                    Stream receiveStream = response.GetResponseStream();
-                    StreamReader readStream = null;
-
-                    if (response.CharacterSet == null)
-                    {
-                        readStream = new StreamReader(receiveStream);
-                    }
-                    else
-                    {
-                        readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
-                    }
-
-                    string data = readStream.ReadToEnd();
-
-                    response.Close();
-                    readStream.Close();
-                    
-                    // wikipedia page
-                    if (r.Link.Contains("wikipedia.org"))
-                    {
-                        // get text of detinition from wikipedia
-                        r.Text = wikiParser.Parse(data);
-                    }
-                    else
-                    {
-                        // parse unknown page html
-                        r.Text = articleParser.Parse(data);
-                    }
+                    // parse html page by wiki parser on unknown page parser
+                    r.Text = r.Link.Contains("wikipedia.org") ? wikiParser.Parse(data) : articleParser.Parse(data);
                 }
                 catch (WebException ex)
                 {
@@ -197,6 +166,69 @@ namespace BrainySearch.Logic.Core
             {
                 r.Html = string.Format("<p>{0}</p>", r.Text.Replace("\n", "</p><p>"));
             }
+        }
+
+        private string GetHtmlResult(string link)
+        {
+            // result
+            string data = null;
+            // variables to dispose
+            HttpWebResponse response = null;
+            Stream receiveStream = null;
+            MemoryStream mReceiveStream = new MemoryStream();
+            StreamReader readStream = null;
+
+            try
+            {
+                // get data
+                response = (HttpWebResponse)((HttpWebRequest)WebRequest.Create(link)).GetResponse();
+
+                // check response status and result type
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    // get response
+                    receiveStream = response.GetResponseStream();
+                    receiveStream.CopyTo(mReceiveStream);
+                    mReceiveStream.Position = 0;
+                    // get encoding if correspond exists
+                    Encoding enc = Encoding.GetEncodings()
+                        .Where(item => item.Name == response.CharacterSet)?.FirstOrDefault()?.GetEncoding();
+                    // get stream
+                    readStream = enc == null ? new StreamReader(mReceiveStream) : new StreamReader(mReceiveStream, enc);
+                    // read html
+                    data = readStream.ReadToEnd();
+
+                    // recheck encoding
+                    if (data.Contains("charset="))
+                    {
+                        int encStartIndex = data.IndexOf("charset=") + "charset=".Length;
+                        int encEndEncodingIndex = data.IndexOfAny(new[] { ' ', '\"', ';', '\'' }, encStartIndex);
+                        string encoding = data.Substring(encStartIndex, encEndEncodingIndex - encStartIndex);
+                        Encoding newEnc = Encoding.GetEncodings()
+                            .Where(item => item.Name == encoding)?.FirstOrDefault()?.GetEncoding();
+                        
+                        // check encoding is not the same
+                        if (newEnc != null && (enc == null || !enc.Equals(newEnc)))
+                        {
+                            // read html with new encoding
+                            mReceiveStream.Position = 0;
+                            var sr = new StreamReader(mReceiveStream, newEnc);
+                            data = sr.ReadToEnd();
+                            sr.Close(); sr.Dispose();
+                        }
+                    }
+                }            
+            }
+            finally
+            {
+                // clean up
+                if (response != null) { response.Close(); response.Dispose(); }
+                if (receiveStream != null) { receiveStream.Close(); receiveStream.Dispose(); }
+                if (mReceiveStream != null) { mReceiveStream.Close(); mReceiveStream.Dispose(); }
+                if (readStream != null) { readStream.Close(); readStream.Dispose(); }
+            }
+
+            return data;
         }
 
         #endregion

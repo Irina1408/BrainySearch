@@ -29,8 +29,8 @@ namespace BrainySearch.Logic.Parser
             var document = CQ.Create(html).Document;
             if (document == null) return null;
             // get html body document
-            var bodyDom = document.Body;
-            if (bodyDom == null) return null;
+            IDomObject bodyDom = document.Body;
+            if (bodyDom == null) bodyDom = document;
             // search by id or class name "content"
             var res = SearchChildren(bodyDom, "content", "content");
             // search by id or class name "article"
@@ -55,7 +55,8 @@ namespace BrainySearch.Logic.Parser
                     }
                 }
             }
-            else
+
+            if (sb.Length == 0)
             {
                 // get all tags with text
                 foreach (var ch in SearchChildren(bodyDom, true, "p"))
