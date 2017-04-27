@@ -131,7 +131,7 @@ namespace BrainySearch.Logic.Parser
 
         protected bool IsValidForSearchDom(IDomObject dom)
         {
-            string[] excludedFromSearchItems = new[] { "footer" };
+            string[] excludedFromSearchItems = new[] { "footer", "script", "iframe", "select" };
 
             if (!string.IsNullOrEmpty(dom.Id) && excludedFromSearchItems.Any(item => dom.Id.ToLower().Contains(item)))
                 return false;
@@ -139,7 +139,7 @@ namespace BrainySearch.Logic.Parser
             if (!string.IsNullOrEmpty(dom.ClassName) && excludedFromSearchItems.Any(item => dom.ClassName.ToLower().Contains(item)))
                 return false;
 
-            if (excludedFromSearchItems.Any(item => dom.NodeName.ToLower().Contains(item)))
+            if (!string.IsNullOrEmpty(dom.NodeName) && excludedFromSearchItems.Any(item => dom.NodeName.ToLower().Contains(item)))
                 return false;
 
             return true;

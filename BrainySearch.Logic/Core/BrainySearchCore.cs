@@ -25,7 +25,7 @@ namespace BrainySearch.Logic.Core
         {
             brainySearchService = new BrainySearchService();
             // TODO: should be unlimited
-            brainySearchService.SearchParameters.Limit = 100;
+            brainySearchService.SearchParameters.Limit = 80;
         }
 
         #endregion
@@ -164,6 +164,7 @@ namespace BrainySearch.Logic.Core
         {
             foreach (var r in searchResults.Results.Where(item => !string.IsNullOrEmpty(item.Text)))
             {
+                while(r.Text.Contains("\n\n")) r.Text = r.Text.Replace("\n\n", "\n");
                 r.Html = string.Format("<p>{0}</p>", r.Text.Replace("\n", "</p><p>"));
             }
         }
@@ -201,12 +202,16 @@ namespace BrainySearch.Logic.Core
                     // recheck encoding
                     if (data.Contains("charset="))
                     {
+                        // get encoding start index and end index in the html page
                         int encStartIndex = data.IndexOf("charset=") + "charset=".Length;
                         int encEndEncodingIndex = data.IndexOfAny(new[] { ' ', '\"', ';', '\'' }, encStartIndex);
+                        // get encoding name
                         string encoding = data.Substring(encStartIndex, encEndEncodingIndex - encStartIndex);
+                        // get encoding object
                         Encoding newEnc = Encoding.GetEncodings()
                             .Where(item => item.Name == encoding)?.FirstOrDefault()?.GetEncoding();
-                        
+                        if (newEnc == null && encoding.Contains("1251")) newEnc = Encoding.GetEncoding(1251);
+
                         // check encoding is not the same
                         if (newEnc != null && (enc == null || !enc.Equals(newEnc)))
                         {

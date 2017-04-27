@@ -10,7 +10,7 @@ namespace BrainySearch.Logic.Parser
 
     public static class HtmlParseHelper
     {
-        private static string[] newLineItems = new[] { "li", "h1", "h2", "h3", "h4", "h5", "p", "br" };
+        private static string[] newLineItems = new[] { "li", "h1", "h2", "h3", "h4", "h5", "p", "br", "tr" };
 
         #region Get inner html
 
@@ -137,6 +137,8 @@ namespace BrainySearch.Logic.Parser
                         else
                             sb.AppendLine(GetInnerText(ch));
                     }
+                    else if (ch.NodeName.ToLower() == "td")
+                        sb.Append(" " + GetInnerText(ch));
                     else
                         sb.Append(GetInnerText(ch));
 
