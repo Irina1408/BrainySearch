@@ -65,6 +65,8 @@
   <ItemGroup>
     <Compile Include="Core\BrainySearchCore.cs" />
     <Compile Include="Core\BrainySearchResult.cs" />
+    <Compile Include="Filters\KeyWordsFilter.cs" />
+    <Compile Include="Filters\SearchResultsFilter.cs" />
     <Compile Include="LangDetection\LangDetector.cs" />
     <Compile Include="Parser\ArticleParser.cs" />
     <Compile Include="Parser\Base\TextParser.cs" />
@@ -94,6 +96,7 @@
     <Compile Include="Search\Wikipedia\IWikipediaService.cs" />
     <Compile Include="Search\Wikipedia\WikipediaParameters.cs" />
     <Compile Include="Search\Wikipedia\WikipediaService.cs" />
+    <Compile Include="Analysis\ZipfLawAnalyser.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

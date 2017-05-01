@@ -1,4 +1,5 @@
-﻿using BrainySearch.Logic.Parser;
+﻿using BrainySearch.Logic.Filters;
+using BrainySearch.Logic.Parser;
 using BrainySearch.Logic.Search.Base;
 using BrainySearch.Logic.Search.BrainySearchS;
 using System;
@@ -14,8 +15,10 @@ namespace BrainySearch.Logic.Core
     public class BrainySearchCore
     {
         #region Private fields
-
+        
         private IBrainySearchService brainySearchService;
+        private SearchResultsFilter searchResultsFilter;
+        private KeyWordsFilter keyWordsFilter;
 
         #endregion
 
@@ -24,6 +27,8 @@ namespace BrainySearch.Logic.Core
         public BrainySearchCore()
         {
             brainySearchService = new BrainySearchService();
+            searchResultsFilter = new SearchResultsFilter();
+            keyWordsFilter = new KeyWordsFilter();
             // TODO: should be unlimited
             brainySearchService.SearchParameters.Limit = 80;
         }
@@ -36,58 +41,45 @@ namespace BrainySearch.Logic.Core
         {
             // 1. Search
             var searchResults = Search(searchString, keyWords);
-            if (searchResults.HasErrors || searchResults.Results.Count == 0) return searchResults;
+            if (searchResults.HasErrors || searchResults.Results.Count == 0) return BuildBrainyResult(searchResults);
             // 2. Parse html and get clear text
-            Parse(searchResults);
-            if (searchResults.HasErrors) return searchResults;
+            ParsePageHtml(searchResults.Results);
+            // 3. Apply all text filters
+            FilterResultsByContent(searchResults.Results, keyWords);
 
-            return searchResults;
+            return BuildBrainyResult(searchResults);
         }
 
         #endregion
 
         #region Private methods
 
-        #region Search
-
-        private SearchResults<BrainySearchResult> Search(string searchString, string[] keyWords)
+        /// <summary>
+        /// Search by text and key words list of correspond links
+        /// </summary>
+        private SearchResults<ISearchResult> Search(string searchString, string[] keyWords)
         {
             // 1. Detect search string language
-            DetectLanguage(searchString);
-            // 2. Search links by search string
-            var sr = brainySearchService.Search(searchString, keyWords);
-            // 3. Create SearchResults<BrainySearchResult>
-            var searchResults = new SearchResults<BrainySearchResult>() { ErrorMessage = sr.ErrorMessage };
-            searchResults.Results.AddRange(
-                sr.Results.Select(item => new BrainySearchResult()
-                {
-                    Title = item.Title,
-                    Link = item.Link
-                }));
-            // 4. Remove extraneous links
-            RemoveExtraneousLinks(searchResults);
-            // 5. Fix result links
-            FixLinks(searchResults);
-            
+            brainySearchService.SearchParameters.Language = LangDetection.LangDetector.Detect(searchString);
+            // 2. Search links by search string and key words
+            var searchResults = brainySearchService.Search(searchString, keyWords);
+            // 3. Filter search results (by links)
+            searchResultsFilter.Filter(searchResults.Results);
+            // 4. Fix result links
+            FixLinks(searchResults.Results);
+            // 5. Clean found text if it exists
+            foreach (var r in searchResults.Results.Where(item => !string.IsNullOrEmpty(item.Text)))
+                r.Text = null;
+
             return searchResults;
         }
 
         /// <summary>
-        /// Detect language by text
+        /// Fix links for correct showing and opening
         /// </summary>
-        /// <param name="text"></param>
-        private void DetectLanguage(string text)
+        private void FixLinks(List<ISearchResult> searchResults)
         {
-            brainySearchService.SearchParameters.Language = LangDetection.LangDetector.Detect(text);
-        }
-
-        /// <summary>
-        /// Fix links for correct showing and link
-        /// </summary>
-        /// <param name="searchResults"></param>
-        private void FixLinks(SearchResults<BrainySearchResult> searchResults)
-        {
-            foreach (var sr in searchResults.Results.Where(item => item.Link != null))
+            foreach (var sr in searchResults.Where(item => item.Link != null))
             {
                 // add https in page link if it does not exist
                 if (!sr.Link.StartsWith("http"))
@@ -100,43 +92,15 @@ namespace BrainySearch.Logic.Core
         }
 
         /// <summary>
-        /// Remove extraneous links like forums etc
-        /// </summary>
-        private void RemoveExtraneousLinks(SearchResults<BrainySearchResult> searchResults)
-        {
-            // remove forums and youtube videos
-            var linkToRemove = new[] { "forum", "youtube.com" };
-            searchResults.Results.RemoveAll(item => linkToRemove.Any(l => item.Link.Contains(l)));
-
-            // TODO: make it generic
-            // remove links to file download
-            var fileExtensions = new string[] { ".doc", ".docx", ".xls", ".xlsx", ".pdf", ".ppt" };
-            foreach(var ext in fileExtensions)
-                searchResults.Results.RemoveAll(item => item.Link.EndsWith(ext));
-        }
-
-        #endregion
-
-        #region Parsing
-
-        private void Parse(SearchResults<BrainySearchResult> searchResults)
-        {
-            // 1. Get text
-            ParsePageHtml(searchResults);
-            // 2. Build html
-            BuildResultHtml(searchResults);
-        }
-
-        /// <summary>
         /// Fill result text by page parsing
         /// </summary>
-        private void ParsePageHtml(SearchResults<BrainySearchResult> searchResults)
+        private void ParsePageHtml(List<ISearchResult> searchResults)
         {
             // init parsers
             var wikiParser = new WikipediaParser();
             var articleParser = new ArticleParser();
-            
-            foreach (var r in searchResults.Results)
+
+            foreach (var r in searchResults)
             {
                 try
                 {
@@ -157,18 +121,12 @@ namespace BrainySearch.Logic.Core
                     // TODO: remove
                     r.Text = "Error html parsing: " + ex.Message;
                 }
-            }  
-        }
-
-        private void BuildResultHtml(SearchResults<BrainySearchResult> searchResults)
-        {
-            foreach (var r in searchResults.Results.Where(item => !string.IsNullOrEmpty(item.Text)))
-            {
-                while(r.Text.Contains("\n\n")) r.Text = r.Text.Replace("\n\n", "\n");
-                r.Html = string.Format("<p>{0}</p>", r.Text.Replace("\n", "</p><p>"));
             }
         }
 
+        /// <summary>
+        /// Returns html page with correct encoding
+        /// </summary>
         private string GetHtmlResult(string link)
         {
             // result
@@ -194,6 +152,7 @@ namespace BrainySearch.Logic.Core
                     // get encoding if correspond exists
                     Encoding enc = Encoding.GetEncodings()
                         .Where(item => item.Name == response.CharacterSet)?.FirstOrDefault()?.GetEncoding();
+                    if (enc == null && response.CharacterSet.Contains("1251")) enc = Encoding.GetEncoding(1251);
                     // get stream
                     readStream = enc == null ? new StreamReader(mReceiveStream) : new StreamReader(mReceiveStream, enc);
                     // read html
@@ -222,7 +181,7 @@ namespace BrainySearch.Logic.Core
                             sr.Close(); sr.Dispose();
                         }
                     }
-                }            
+                }
             }
             finally
             {
@@ -236,7 +195,55 @@ namespace BrainySearch.Logic.Core
             return data;
         }
 
-        #endregion
+        /// <summary>
+        /// Returns brainy search result
+        /// </summary>
+        private SearchResults<BrainySearchResult> BuildBrainyResult(SearchResults<ISearchResult> searchResults)
+        {
+            // init brainy search result
+            var sr = new SearchResults<BrainySearchResult>() { ErrorMessage = searchResults.ErrorMessage };
+            sr.Results.AddRange(searchResults.Results.Select(item => new BrainySearchResult()
+                { Title = item.Title, Link = item.Link, Text = item.Text }));
+            // build html for correct text showing
+            BuildResultHtml(sr);
+
+            return sr;
+        }
+
+        /// <summary>
+        /// Build html from simple text in search results for correct showing
+        /// </summary>
+        private void BuildResultHtml(SearchResults<BrainySearchResult> searchResults)
+        {
+            foreach (var r in searchResults.Results.Where(item => !string.IsNullOrEmpty(item.Text)))
+            {
+                while (r.Text.Contains("\n\n")) r.Text = r.Text.Replace("\n\n", "\n");
+                r.Html = string.Format("<p>{0}</p>", r.Text.Replace("\n", "</p><p>"));
+            }
+        }
+
+        /// <summary>
+        /// Filters search results by text
+        /// </summary>
+        private void FilterResultsByContent(List<ISearchResult> searchResults, string[] keyWords)
+        {
+            var resultsToRemove = new List<ISearchResult>();
+
+            // apply key words filter
+            keyWordsFilter.KeyWords = keyWords?.ToList();
+            foreach (var r in searchResults)
+            {
+                if (!keyWordsFilter.IsSuitableText(r.Text))
+                    resultsToRemove.Add(r);
+            }
+
+            // remove external results
+            foreach(var r in resultsToRemove)
+            {
+                if (searchResults.Contains(r))
+                    searchResults.Remove(r);
+            }
+        }
 
         #endregion
     }
