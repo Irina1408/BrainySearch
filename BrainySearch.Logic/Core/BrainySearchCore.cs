@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using BrainySearch.Logic.Analysis;
 using System.Threading.Tasks;
 
 namespace BrainySearch.Logic.Core
@@ -19,6 +20,7 @@ namespace BrainySearch.Logic.Core
         private IBrainySearchService brainySearchService;
         private SearchResultsFilter searchResultsFilter;
         private KeyWordsFilter keyWordsFilter;
+        private BrainySearchAnalyser brainySearchAnalyser;
 
         #endregion
 
@@ -29,6 +31,7 @@ namespace BrainySearch.Logic.Core
             brainySearchService = new BrainySearchService();
             searchResultsFilter = new SearchResultsFilter();
             keyWordsFilter = new KeyWordsFilter();
+            brainySearchAnalyser = new BrainySearchAnalyser();
             // TODO: should be unlimited
             brainySearchService.SearchParameters.Limit = 80;
         }
@@ -41,13 +44,16 @@ namespace BrainySearch.Logic.Core
         {
             // 1. Search
             var searchResults = Search(searchString, keyWords);
-            if (searchResults.HasErrors || searchResults.Results.Count == 0) return BuildBrainyResult(searchResults);
+            if (searchResults.HasErrors || searchResults.Results.Count == 0) return BuildBrainySearchResult(searchResults);
             // 2. Parse html and get clear text
             ParsePageHtml(searchResults.Results);
             // 3. Apply all text filters
             FilterResultsByContent(searchResults.Results, keyWords);
+            // 4. Apply analysis filters and update search result sequence
+            var analysisResult = brainySearchAnalyser.Analyse(searchResults.Results);
 
-            return BuildBrainyResult(searchResults);
+            // 5. Build full result
+            return BuildBrainySearchResult(analysisResult);
         }
 
         #endregion
@@ -60,7 +66,7 @@ namespace BrainySearch.Logic.Core
         private SearchResults<ISearchResult> Search(string searchString, string[] keyWords)
         {
             // 1. Detect search string language
-            brainySearchService.SearchParameters.Language = LangDetection.LangDetector.Detect(searchString);
+            brainySearchService.SearchParameters.Language = TextProcessing.LangDetector.Detect(searchString);
             // 2. Search links by search string and key words
             var searchResults = brainySearchService.Search(searchString, keyWords);
             // 3. Filter search results (by links)
@@ -110,17 +116,8 @@ namespace BrainySearch.Logic.Core
                     // parse html page by wiki parser on unknown page parser
                     r.Text = r.Link.Contains("wikipedia.org") ? wikiParser.Parse(data) : articleParser.Parse(data);
                 }
-                catch (WebException ex)
-                {
-                    // TODO: remove
-                    r.Text = "Web exception: " + ex.Message;
-                }
-                catch (Exception ex)
-                {
-                    // do nothing
-                    // TODO: remove
-                    r.Text = "Error html parsing: " + ex.Message;
-                }
+                catch (Exception)
+                { }
             }
         }
 
@@ -143,7 +140,7 @@ namespace BrainySearch.Logic.Core
                 response = (HttpWebResponse)((HttpWebRequest)WebRequest.Create(link)).GetResponse();
 
                 // check response status and result type
-                if (response.StatusCode == HttpStatusCode.OK)
+                if (response.StatusCode == HttpStatusCode.OK && response.ContentType.Contains("text/html"))
                 {
                     // get response
                     receiveStream = response.GetResponseStream();
@@ -198,12 +195,32 @@ namespace BrainySearch.Logic.Core
         /// <summary>
         /// Returns brainy search result
         /// </summary>
-        private SearchResults<BrainySearchResult> BuildBrainyResult(SearchResults<ISearchResult> searchResults)
+        private SearchResults<BrainySearchResult> BuildBrainySearchResult(SearchResults<ISearchResult> searchResults)
         {
             // init brainy search result
             var sr = new SearchResults<BrainySearchResult>() { ErrorMessage = searchResults.ErrorMessage };
             sr.Results.AddRange(searchResults.Results.Select(item => new BrainySearchResult()
                 { Title = item.Title, Link = item.Link, Text = item.Text }));
+            // build html for correct text showing
+            BuildResultHtml(sr);
+
+            return sr;
+        }
+
+        /// <summary>
+        /// Returns brainy search result
+        /// </summary>
+        private SearchResults<BrainySearchResult> BuildBrainySearchResult(List<AnalysisResult> searchResults)
+        {
+            // init brainy search result
+            var sr = new SearchResults<BrainySearchResult>();
+            sr.Results.AddRange(searchResults.Select(item => new BrainySearchResult()
+            {
+                Title = item.SearchResult.Title,
+                Link = item.SearchResult.Link,
+                Text = item.SearchResult.Text,
+                Index = item.Index
+            }));
             // build html for correct text showing
             BuildResultHtml(sr);
 
@@ -229,9 +246,13 @@ namespace BrainySearch.Logic.Core
         {
             var resultsToRemove = new List<ISearchResult>();
 
+            // remove not persed pages
+            foreach (var r in searchResults.Where(item => string.IsNullOrEmpty(item.Text)))
+                resultsToRemove.Add(r);
+
             // apply key words filter
             keyWordsFilter.KeyWords = keyWords?.ToList();
-            foreach (var r in searchResults)
+            foreach (var r in searchResults.Where(item => !resultsToRemove.Contains(item)))
             {
                 if (!keyWordsFilter.IsSuitableText(r.Text))
                     resultsToRemove.Add(r);

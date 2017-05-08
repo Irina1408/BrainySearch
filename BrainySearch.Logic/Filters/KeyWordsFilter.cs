@@ -59,7 +59,7 @@ namespace BrainySearch.Logic.Filters
             // filter key words by language (only english key words)
             foreach(var keyWord in keyWords)
             {
-                if(LangDetection.LangDetector.Detect(keyWord) == "en")
+                if(TextProcessing.LangDetector.Detect(keyWord) == "en")
                     this.keyWords.Add(keyWord);
             }
         }

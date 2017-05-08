@@ -75,7 +75,7 @@ namespace BrainySearch.Logic.Parser
         protected string RemoveEmptySpaces(string text)
         {
             if (string.IsNullOrEmpty(text)) return string.Empty;
-            return text.Replace("\t", null).Replace("\n", null).Replace("\r", null); ;
+            return text.Replace("\t", " ").Replace("\n", " ").Replace("\r", " "); ;
         }
 
         protected string RemoveWhiteSpaces(string text)

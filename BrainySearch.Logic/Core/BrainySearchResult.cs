@@ -13,5 +13,10 @@ namespace BrainySearch.Logic.Core
         /// Html of the page part with correct search result
         /// </summary>
         public string Html { get; set; }
+
+        /// <summary>
+        /// Index in the sequence
+        /// </summary>
+        public int Index { get; set; }
     }
 }

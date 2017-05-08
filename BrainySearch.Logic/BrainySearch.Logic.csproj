@@ -57,17 +57,24 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="YandexMystem.Wrapper, Version=1.0.0.18234, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\YandexMystem.Wrapper.1.0.0.18234\lib\net452\YandexMystem.Wrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
       <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\AnalysisResult.cs" />
+    <Compile Include="Analysis\ZipfLawAnalyser.cs" />
     <Compile Include="Core\BrainySearchCore.cs" />
     <Compile Include="Core\BrainySearchResult.cs" />
+    <Compile Include="Analysis\BrainySearchAnalyser.cs" />
     <Compile Include="Filters\KeyWordsFilter.cs" />
     <Compile Include="Filters\SearchResultsFilter.cs" />
-    <Compile Include="LangDetection\LangDetector.cs" />
+    <Compile Include="TextProcessing\LangDetector.cs" />
     <Compile Include="Parser\ArticleParser.cs" />
     <Compile Include="Parser\Base\TextParser.cs" />
     <Compile Include="Parser\Utils\HtmlParseHelper.cs" />
@@ -96,14 +103,21 @@
     <Compile Include="Search\Wikipedia\IWikipediaService.cs" />
     <Compile Include="Search\Wikipedia\WikipediaParameters.cs" />
     <Compile Include="Search\Wikipedia\WikipediaService.cs" />
-    <Compile Include="Analysis\ZipfLawAnalyser.cs" />
+    <Compile Include="TextProcessing\WordNormalizer.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Analysis\stop-words.txt" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="mystem.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

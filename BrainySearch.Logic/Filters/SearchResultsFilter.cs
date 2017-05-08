@@ -12,8 +12,8 @@ namespace BrainySearch.Logic.Filters
     /// </summary>
     public class SearchResultsFilter
     {
-        // forums and youtube videos
-        private readonly string[] linkToRemove = new[] { "forum", "youtube.com" };
+        // forums, youtube videos, book libraries
+        private readonly string[] linkToRemove = new[] { "forum", "youtube.com", "lib.", "library" };
         private readonly string[] fileExtensions = new string[] { ".doc", ".docx", ".xls", ".xlsx", ".pdf", ".ppt" };
 
         public void Filter(List<ISearchResult> searchResults)
