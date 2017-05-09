@@ -64,7 +64,7 @@ namespace BrainySearch.Logic.Parser
                     sb.AppendLine(HttpUtility.HtmlDecode(HtmlParseHelper.GetInnerText(ch)));
                 }
             }
-
+            
             return sb.ToString();
         }
 
@@ -75,7 +75,7 @@ namespace BrainySearch.Logic.Parser
         protected string RemoveEmptySpaces(string text)
         {
             if (string.IsNullOrEmpty(text)) return string.Empty;
-            return text.Replace("\t", " ").Replace("\n", " ").Replace("\r", " "); ;
+            return text.Replace("\t", " ").Replace("\n", " ").Replace("\r", " ").Replace("&nbsp", " "); ;
         }
 
         protected string RemoveWhiteSpaces(string text)

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace BrainySearch.Logic.TextProcessing
 {
+    /// <summary>
+    /// Dedetct text language (only "ru", "en", "uk")
+    /// </summary>
     public class LangDetector
     {
         public static string Detect(string text)

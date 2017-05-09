@@ -234,6 +234,9 @@ namespace BrainySearch.Logic.Core
         {
             foreach (var r in searchResults.Results.Where(item => !string.IsNullOrEmpty(item.Text)))
             {
+                while (r.Text.Contains("\r")) r.Text = r.Text.Replace("\r", " ");
+                while (r.Text.Contains("  ")) r.Text = r.Text.Replace("  ", " ");
+                while (r.Text.Contains("\n \n")) r.Text = r.Text.Replace("\n \n", "\n");
                 while (r.Text.Contains("\n\n")) r.Text = r.Text.Replace("\n\n", "\n");
                 r.Html = string.Format("<p>{0}</p>", r.Text.Replace("\n", "</p><p>"));
             }
@@ -246,20 +249,32 @@ namespace BrainySearch.Logic.Core
         {
             var resultsToRemove = new List<ISearchResult>();
 
-            // remove not persed pages
+            // 1. Remove not persed pages
             foreach (var r in searchResults.Where(item => string.IsNullOrEmpty(item.Text)))
                 resultsToRemove.Add(r);
 
-            // apply key words filter
-            keyWordsFilter.KeyWords = keyWords?.ToList();
-            foreach (var r in searchResults.Where(item => !resultsToRemove.Contains(item)))
-            {
-                if (!keyWordsFilter.IsSuitableText(r.Text))
-                    resultsToRemove.Add(r);
-            }
+            // 2. Apply key words filter
+            // set key words
+            keyWordsFilter.KeyWords.Clear();
+            if (keyWords != null) keyWordsFilter.KeyWords.AddRange(keyWords);
 
-            // remove external results
-            foreach(var r in resultsToRemove)
+            // key: search result
+            // value: key words count that search result contains
+            var searchResultKeyWords = new Dictionary<ISearchResult, int>();
+
+            // get key words for every result
+            foreach (var r in searchResults.Where(item => !resultsToRemove.Contains(item)))
+                searchResultKeyWords.Add(r, keyWordsFilter.GetContainedKeyWordsCount(r.Text));
+
+            // get max counted key words in results
+            int maxKeyWordsCount = searchResultKeyWords.Max(item => item.Value);
+
+            // remove results that do not contain all key words
+            foreach(var r in searchResultKeyWords.Where(item => item.Value != maxKeyWordsCount))
+                resultsToRemove.Add(r.Key);
+
+            // 3. Remove found external results
+            foreach (var r in resultsToRemove)
             {
                 if (searchResults.Contains(r))
                     searchResults.Remove(r);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BrainySearch.Logic.TextProcessing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,8 +13,9 @@ namespace BrainySearch.Logic.Filters
     public class KeyWordsFilter
     {
         #region Private fields
-
-        private List<string> keyWords;
+        
+        protected WordNormalizer wordNormalizer;
+        private List<string> NormalizedKeyWords = new List<string>();
 
         #endregion
 
@@ -21,18 +23,19 @@ namespace BrainySearch.Logic.Filters
 
         public KeyWordsFilter()
         {
-            this.keyWords = new List<string>();
+            KeyWords = new List<string>();
+            NormalizedKeyWords = new List<string>();
+            wordNormalizer = new WordNormalizer();
         }
 
         #endregion
 
         #region Public methods and properties
 
-        public List<string> KeyWords
-        {
-            get { return keyWords; }
-            set { FillKeyWords(value); }
-        }
+        /// <summary>
+        /// Key words for text checking
+        /// </summary>
+        public List<string> KeyWords { get; private set; }
 
         /// <summary>
         /// Returns true if text contains all key words else false
@@ -40,28 +43,38 @@ namespace BrainySearch.Logic.Filters
         public bool IsSuitableText(string text)
         {
             // check any key word exists
-            if (keyWords.Count == 0) return true;
+            if (KeyWords.Count == 0) return true;
+            // normalize key words
+            if (NormalizedKeyWords.Count == 0) NormalizeKeyWords();
+            // get all normalized words in text
+            var normalizedWords = wordNormalizer.GetNormalizedWords(text, true);
             // text should contain all key words
-            return keyWords.All(item => text.Contains(item));
+            return NormalizedKeyWords.All(item => normalizedWords.Contains(item));
         }
 
-        #endregion
-
-        #region Private methods
-
-        private void FillKeyWords(List<string> keyWords)
+        /// <summary>
+        /// Returns count of contained key words in the text
+        /// </summary>
+        public int GetContainedKeyWordsCount(string text)
         {
-            // clear existing key words
-            this.keyWords.Clear();
-            // return is any key word does not exist
-            if (keyWords == null) return;
+            // check any key word exists
+            if (KeyWords.Count == 0) return 0;
+            // normalize key words
+            if (NormalizedKeyWords.Count == 0) NormalizeKeyWords();
+            // get all normalized words in text
+            var normalizedWords = wordNormalizer.GetNormalizedWords(text, true);
 
-            // filter key words by language (only english key words)
-            foreach(var keyWord in keyWords)
-            {
-                if(TextProcessing.LangDetector.Detect(keyWord) == "en")
-                    this.keyWords.Add(keyWord);
-            }
+            // text should contain all key words
+            return NormalizedKeyWords.Where(item => normalizedWords.Contains(item)).Count();
+        }
+
+        public void NormalizeKeyWords()
+        {
+            // cleanup 
+            NormalizedKeyWords.Clear();
+            // fill normalized key words
+            foreach (var kw in KeyWords)
+                NormalizedKeyWords.AddRange(wordNormalizer.GetNormalizedWords(kw, true));
         }
 
         #endregion

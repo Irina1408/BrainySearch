@@ -68,7 +68,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\AnalysisResult.cs" />
-    <Compile Include="Analysis\ZipfLawAnalyser.cs" />
+    <Compile Include="Analysis\Base\ITextAnalyser.cs" />
+    <Compile Include="Analysis\Base\TextAnalyserBase.cs" />
+    <Compile Include="Analysis\Analysers\TextRankingAnalyser.cs" />
+    <Compile Include="Analysis\Analysers\ZipfLawAnalyser.cs" />
     <Compile Include="Core\BrainySearchCore.cs" />
     <Compile Include="Core\BrainySearchResult.cs" />
     <Compile Include="Analysis\BrainySearchAnalyser.cs" />
@@ -103,10 +106,11 @@
     <Compile Include="Search\Wikipedia\IWikipediaService.cs" />
     <Compile Include="Search\Wikipedia\WikipediaParameters.cs" />
     <Compile Include="Search\Wikipedia\WikipediaService.cs" />
+    <Compile Include="TextProcessing\TextProcessingUtils.cs" />
     <Compile Include="TextProcessing\WordNormalizer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Analysis\stop-words.txt" />
+    <EmbeddedResource Include="TextProcessing\stop-words.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

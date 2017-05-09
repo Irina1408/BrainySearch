@@ -124,24 +124,28 @@ namespace BrainySearch.Logic.Parser
         
         public static string GetInnerText(IDomObject dom)
         {
+            return GetInnerText(dom, false);
+        }
+
+        private static string GetInnerText(IDomObject dom, bool ignoreNewLine)
+        {
             if (dom.HasChildren)
             {
                 var sb = new StringBuilder();
 
                 foreach (var ch in dom.ChildNodes)
                 {
-                    if (newLineItems.Contains(ch.NodeName.ToLower()))
+                    if (newLineItems.Contains(ch.NodeName.ToLower()) && !ignoreNewLine)
                     {
                         if (ch.NodeName.ToLower() == "li")
-                            sb.AppendLine(" - " + GetInnerText(ch));
+                            sb.AppendLine(" - " + GetInnerText(ch, true));
                         else
-                            sb.AppendLine(GetInnerText(ch));
+                            sb.AppendLine(GetInnerText(ch, ignoreNewLine));
                     }
                     else if (ch.NodeName.ToLower() == "td")
-                        sb.Append(" " + GetInnerText(ch));
+                        sb.Append(" " + GetInnerText(ch, true));
                     else
-                        sb.Append(GetInnerText(ch));
-
+                        sb.Append(GetInnerText(ch, ignoreNewLine));
                 }
 
                 return sb.ToString();
@@ -152,7 +156,6 @@ namespace BrainySearch.Logic.Parser
                     return dom.InnerText;
                 else if (dom.NodeType == NodeType.TEXT_NODE)
                     return dom.NodeValue;
-
             }
 
             return null;

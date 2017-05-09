@@ -7,20 +7,27 @@ using YandexMystem.Wrapper;
 
 namespace BrainySearch.Logic.TextProcessing
 {
+    /// <summary>
+    /// Normalize words form
+    /// </summary>
     public class WordNormalizer
     {
+        #region Private fields
+
         private Mysteam mysteam;
+
+        #endregion
+
+        #region Initialization
 
         public WordNormalizer()
         {
             mysteam = new Mysteam();
-            OnlySingleResults = false;
         }
 
-        /// <summary>
-        /// Gets true if word should no be normilized in case when normalizator found more then one normalized word
-        /// </summary>
-        public bool OnlySingleResults { get; set; }
+        #endregion
+
+        #region Public properties
 
         /// <summary>
         /// Returns normalized word
@@ -31,10 +38,6 @@ namespace BrainySearch.Logic.TextProcessing
             var res = mysteam.GetWords(word);
             // check result
             if (res.Count == 0)
-                return string.Empty;
-
-            // if normalizator found more then one normalized word and OnlySingleResults return the same word
-            if (OnlySingleResults && res[0].Lexems.Count > 1)
                 return word;
 
             if (res[0].Lexems.Count > 0)
@@ -53,10 +56,8 @@ namespace BrainySearch.Logic.TextProcessing
             // get normalized words list
             foreach (var r in mysteam.GetWords(text.Replace("\n", " ").Replace("\r", " ")))
             {
-                // if normalizator found more then one normalized word and OnlySingleResults add the same word
-                if (r.Lexems.Count > 1 && OnlySingleResults)
-                    words.Add(r.SourceWord.Text);
-                else if(r.Lexems.Count == 0)
+                // if normalizer did no find any normalized word add source word
+                if(r.Lexems.Count == 0)
                     words.Add(r.SourceWord.Text);
                 else
                     words.Add(r.Lexems[0].Lexeme);
@@ -64,5 +65,7 @@ namespace BrainySearch.Logic.TextProcessing
 
             return distinct ? words.Distinct().ToList() : words;
         }
+
+        #endregion
     }
 }
