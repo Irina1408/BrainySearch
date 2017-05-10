@@ -68,10 +68,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\AnalysisResult.cs" />
-    <Compile Include="Analysis\Base\ITextAnalyser.cs" />
-    <Compile Include="Analysis\Base\TextAnalyserBase.cs" />
     <Compile Include="Analysis\Analysers\TextRankingAnalyser.cs" />
     <Compile Include="Analysis\Analysers\ZipfLawAnalyser.cs" />
+    <Compile Include="Analysis\SearchResultPreparer.cs" />
+    <Compile Include="Analysis\SearchResultToAnalyse.cs" />
     <Compile Include="Core\BrainySearchCore.cs" />
     <Compile Include="Core\BrainySearchResult.cs" />
     <Compile Include="Analysis\BrainySearchAnalyser.cs" />

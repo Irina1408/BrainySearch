@@ -50,6 +50,7 @@ namespace BrainySearch.Logic.Core
             // 3. Apply all text filters
             FilterResultsByContent(searchResults.Results, keyWords);
             // 4. Apply analysis filters and update search result sequence
+            if (keyWords != null) brainySearchAnalyser.KeyWords.AddRange(keyWords);
             var analysisResult = brainySearchAnalyser.Analyse(searchResults.Results);
 
             // 5. Build full result
@@ -214,7 +215,7 @@ namespace BrainySearch.Logic.Core
         {
             // init brainy search result
             var sr = new SearchResults<BrainySearchResult>();
-            sr.Results.AddRange(searchResults.Select(item => new BrainySearchResult()
+            sr.Results.AddRange(searchResults.Where(item => item.IsSuitable).Select(item => new BrainySearchResult()
             {
                 Title = item.SearchResult.Title,
                 Link = item.SearchResult.Link,

@@ -15,7 +15,7 @@ namespace BrainySearch.Logic.Filters
         #region Private fields
         
         protected WordNormalizer wordNormalizer;
-        private List<string> NormalizedKeyWords = new List<string>();
+        private List<string> normalizedKeyWords = new List<string>();
 
         #endregion
 
@@ -24,7 +24,7 @@ namespace BrainySearch.Logic.Filters
         public KeyWordsFilter()
         {
             KeyWords = new List<string>();
-            NormalizedKeyWords = new List<string>();
+            normalizedKeyWords = new List<string>();
             wordNormalizer = new WordNormalizer();
         }
 
@@ -45,11 +45,11 @@ namespace BrainySearch.Logic.Filters
             // check any key word exists
             if (KeyWords.Count == 0) return true;
             // normalize key words
-            if (NormalizedKeyWords.Count == 0) NormalizeKeyWords();
+            if (normalizedKeyWords.Count == 0) NormalizeKeyWords();
             // get all normalized words in text
             var normalizedWords = wordNormalizer.GetNormalizedWords(text, true);
             // text should contain all key words
-            return NormalizedKeyWords.All(item => normalizedWords.Contains(item));
+            return normalizedKeyWords.All(item => normalizedWords.Contains(item));
         }
 
         /// <summary>
@@ -60,21 +60,20 @@ namespace BrainySearch.Logic.Filters
             // check any key word exists
             if (KeyWords.Count == 0) return 0;
             // normalize key words
-            if (NormalizedKeyWords.Count == 0) NormalizeKeyWords();
+            if (normalizedKeyWords.Count == 0) NormalizeKeyWords();
             // get all normalized words in text
             var normalizedWords = wordNormalizer.GetNormalizedWords(text, true);
-
             // text should contain all key words
-            return NormalizedKeyWords.Where(item => normalizedWords.Contains(item)).Count();
+            return normalizedKeyWords.Where(item => normalizedWords.Any(it => it.Contains(item))).Count();
         }
 
         public void NormalizeKeyWords()
         {
             // cleanup 
-            NormalizedKeyWords.Clear();
+            normalizedKeyWords.Clear();
             // fill normalized key words
-            foreach (var kw in KeyWords)
-                NormalizedKeyWords.AddRange(wordNormalizer.GetNormalizedWords(kw, true));
+            foreach (var keyWord in KeyWords)
+                normalizedKeyWords.AddRange(wordNormalizer.GetNormalizedWords(keyWord, true));
         }
 
         #endregion

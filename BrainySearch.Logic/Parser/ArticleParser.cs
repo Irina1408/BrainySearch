@@ -75,7 +75,7 @@ namespace BrainySearch.Logic.Parser
         protected string RemoveEmptySpaces(string text)
         {
             if (string.IsNullOrEmpty(text)) return string.Empty;
-            return text.Replace("\t", " ").Replace("\n", " ").Replace("\r", " ").Replace("&nbsp", " "); ;
+            return text.Replace("\t", " ").Replace("\n", " ").Replace("\r", " ").Replace("&nbsp;", " "); ;
         }
 
         protected string RemoveWhiteSpaces(string text)
@@ -88,7 +88,16 @@ namespace BrainySearch.Logic.Parser
         protected string RemoveComments(string html)
         {
             if (string.IsNullOrEmpty(html)) return string.Empty;
-            return CQ.Create(html).Render(DomRenderingOptions.RemoveComments);
+            html = CQ.Create(html).Render(DomRenderingOptions.RemoveComments);
+
+            while (html.Contains("<!--") && html.Contains("-->"))
+            {
+                int startCommentIndex = html.IndexOf("<!--");
+                int endCommentIndex = html.IndexOf("-->") + "-->".Length;
+                html = string.Format("{0} {1}", html.Substring(0, startCommentIndex), html.Substring(endCommentIndex, html.Length - endCommentIndex));
+            }
+
+            return html;
         }
 
         protected IEnumerable<IDomObject> SearchChildren(IDomObject dom, bool tagNamesIsChildTags, params string[] tagNames)

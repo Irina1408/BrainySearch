@@ -1,6 +1,5 @@
 ﻿using BrainySearch.Logic.Analysis;
 using BrainySearch.Logic.Analysis.Analysers;
-using BrainySearch.Logic.Analysis.Base;
 using BrainySearch.Logic.Search.Base;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,9 @@ namespace BrainySearch.Logic.Analysis
         #region Private fields
 
         private List<AnalysisResult> analysisResults;
-        private ITextAnalyser zipfLawAnalyser;
+        private SearchResultPreparer searchResultPreparer;
+        private ZipfLawAnalyser zipfLawAnalyser;
+        private TextRankingAnalyser textRankingAnalyser;
 
         #endregion
 
@@ -27,12 +28,11 @@ namespace BrainySearch.Logic.Analysis
         public BrainySearchAnalyser()
         {
             analysisResults = new List<AnalysisResult>();
+            searchResultPreparer = new SearchResultPreparer();
             zipfLawAnalyser = new ZipfLawAnalyser();
+            textRankingAnalyser = new TextRankingAnalyser();
             MinNaturalLanguagePercentage = (decimal)0.5; // 50%
             KeyWords = new List<string>();
-
-            // init stop words
-            zipfLawAnalyser.StopWords = TextProcessing.TextProcessingUtils.GetStopWords();
         }
 
         #endregion
@@ -57,9 +57,12 @@ namespace BrainySearch.Logic.Analysis
         {
             // cleanup before processing new results
             analysisResults.Clear();
-
-            // 1. Analyse results by Zipf law
-            ZipfLawAnalyse(searchResults);
+            // prepare search results to analyse
+            var preparedSearchResults = searchResultPreparer.Prepare(searchResults);
+            // analyse results by all methods
+            Analyse(preparedSearchResults);
+            // update results sequence
+            UpdateResultsSequence();
 
             return analysisResults;
         }
@@ -68,27 +71,41 @@ namespace BrainySearch.Logic.Analysis
 
         #region Private methods
 
-        private void ZipfLawAnalyse(List<ISearchResult> searchResults)
+        private void Analyse(List<SearchResultToAnalyse> searchResults)
         {
+            // set parameters
+            textRankingAnalyser.KeyWords = KeyWords;
+            textRankingAnalyser.SearchResultsToAnalyse = searchResults;
+
             // calculate the percentages of natural language of the search results
             foreach (var sr in searchResults)
             {
-                // natural language percentage
-                var naturalLanguagePercentage = zipfLawAnalyser.Analyse(sr.Text);
-                // add in the result only if it is not less then MinNaturalLanguagePercentage
-                if(naturalLanguagePercentage >= MinNaturalLanguagePercentage)
+                // calculate natural language percentage by Zipf law
+                var naturalLanguagePercentage = zipfLawAnalyser.Analyse(sr);
+                // calculate text score by text ranking
+                var textScore = textRankingAnalyser.Analyse(sr);
+                // add new result
+                analysisResults.Add(new AnalysisResult()
                 {
-                    analysisResults.Add(new AnalysisResult()
-                    {
-                        SearchResult = sr,
-                        NaturalLanguagePercentage = naturalLanguagePercentage
-                    });
-                }
+                    SearchResult = sr.SearchResult,
+                    NaturalLanguagePercentage = naturalLanguagePercentage,
+                    TextScore = textScore,
+                    IsSuitable = naturalLanguagePercentage >= MinNaturalLanguagePercentage
+                });
             }
-            
-            // update results sequence
+        }
+
+        /// <summary>
+        /// Updates results sequence
+        /// </summary>
+        private void UpdateResultsSequence()
+        {
+            // get max text score for using as 100%
+            decimal maxTextScore = analysisResults.Max(item => item.TextScore);
+
             int index = 1;
-            foreach (var r in analysisResults.OrderBy(item => item.NaturalLanguagePercentage))
+            // sort in the arithmetic mean of NaturalLanguagePercentage and TextScore percentage
+            foreach (var r in analysisResults.OrderBy(item => (item.NaturalLanguagePercentage + (item.TextScore / maxTextScore)) / 2))
             {
                 r.Index = index;
                 index += 1;
