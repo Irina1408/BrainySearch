@@ -39,7 +39,7 @@ namespace BrainySearch.Logic.Parser
                 {
                     if(cq[i].InnerHtmlAllowed)
                     {
-                        var innerHtml = GetInnerHtmlByTagClassName(cq[i].InnerHTML, className);
+                        var innerHtml = GetInnerHtmlByTagClassName(cq[i].InnerHTML, className, strictEquality);
                         if(!string.IsNullOrEmpty(innerHtml))
                         {
                             return innerHtml;
@@ -85,6 +85,24 @@ namespace BrainySearch.Logic.Parser
         {
             var cq = CQ.Create(html);
             return cq.Document.GetElementsByTagName(tagName).Select(item => item.Render()).ToList();
+        }
+
+        /// <summary>
+        /// Returns list of html tag with entered class name
+        /// </summary>
+        public static List<string> GetHtmlTagsByClassName(string html, string className, bool strictEquality = true)
+        {
+            var cq = CQ.Create(html);
+            var res = new List<string>();
+            for (int i = 0; i < cq.Length; i++)
+            {
+                if (strictEquality && cq[i].ClassName == className || !strictEquality && cq[i].ClassName.Contains(className))
+                    res.Add(cq[i].Render());
+                else if (cq[i].InnerHtmlAllowed)
+                    res.AddRange(GetHtmlTagsByClassName(cq[i].InnerHTML, className, strictEquality));
+            }
+
+            return res;
         }
 
         #endregion

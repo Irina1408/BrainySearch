@@ -49,8 +49,9 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             var startPageService = new StartPageService();
             startPageService.SearchParameters.Limit = SearchParameters.Limit;
             startPageService.SearchParameters.LoadText = false;
+            startPageService.SearchParameters.Language = SearchParameters.Language;
 
-            return Search(searchString, startPageService);
+            return startPageService.SearchAsync(searchString);
         }
 
         #endregion
@@ -65,10 +66,8 @@ namespace BrainySearch.Logic.Search.BrainySearchS
             {
                 // fill search parameters
                 searchService.SearchParameters.Language = SearchParameters.Language;
-                // search
-                var searchResults = searchService.Search(searchString);
                 // return search result
-                return searchResults;
+                return searchService.Search(searchString);
             }
             catch (Exception ex)
             {

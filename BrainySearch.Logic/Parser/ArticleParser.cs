@@ -93,7 +93,7 @@ namespace BrainySearch.Logic.Parser
             while (html.Contains("<!--") && html.Contains("-->"))
             {
                 int startCommentIndex = html.IndexOf("<!--");
-                int endCommentIndex = html.IndexOf("-->") + "-->".Length;
+                int endCommentIndex = html.IndexOf("-->", startCommentIndex) + "-->".Length;
                 html = string.Format("{0} {1}", html.Substring(0, startCommentIndex), html.Substring(endCommentIndex, html.Length - endCommentIndex));
             }
 

@@ -42,7 +42,7 @@ namespace BrainySearch.Controllers
 
             if(!searchResult.HasErrors)
             {
-                foreach (var sr in searchResult.Results)
+                foreach (var sr in searchResult.Results.OrderBy(item => item.Index))
                 {
                     // create short link for view
                     var shortLink = sr.Link.Length > 30 ? string.Format("{0}...", sr.Link.Substring(0, 30)) : sr.Link;
@@ -63,11 +63,8 @@ namespace BrainySearch.Controllers
                     });
                 }
             }
-            // for tests
             else
-            {
                 res.ErrorMessage = searchResult.ErrorMessage;
-            }          
 
             return Content(JsonConvert.SerializeObject(res));
         }

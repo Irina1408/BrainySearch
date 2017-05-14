@@ -82,6 +82,14 @@ namespace BrainySearch.Logic.Analysis.Analysers
         /// <summary>
         /// Calculates the percentage of natural language of the text (result is in decimals: 1 = 100%, 0.1 = 10%)
         /// </summary>
+        public Task<decimal> AnalyseTask(SearchResultToAnalyse searchResultToAnalyse)
+        {
+            return new Task<decimal>(() => Analyse(searchResultToAnalyse));
+        }
+
+        /// <summary>
+        /// Calculates the percentage of natural language of the text (result is in decimals: 1 = 100%, 0.1 = 10%)
+        /// </summary>
         public decimal Analyse(SearchResultToAnalyse searchResultToAnalyse)
         {
             if (searchResultToAnalyse.NormalizedWords.Count == 0) return 0;

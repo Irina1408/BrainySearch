@@ -9,5 +9,6 @@ namespace BrainySearch.Logic.Search.StartPage
 {
     public interface IStartPageService : ISearchService<StartPageParameters, ISearchResult>
     {
+        SearchResults<ISearchResult> SearchAsync(string searchString);
     }
 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BrainySearch.Logic.Analysis
@@ -76,23 +77,52 @@ namespace BrainySearch.Logic.Analysis
             // set parameters
             textRankingAnalyser.KeyWords = KeyWords;
             textRankingAnalyser.SearchResultsToAnalyse = searchResults;
+            textRankingAnalyser.NormalizeKeyWords();
+            // tasks for analysis search results
+            var tasks = new List<Task>();
 
             // calculate the percentages of natural language of the search results
             foreach (var sr in searchResults)
             {
-                // calculate natural language percentage by Zipf law
-                var naturalLanguagePercentage = zipfLawAnalyser.Analyse(sr);
-                // calculate text score by text ranking
-                var textScore = textRankingAnalyser.Analyse(sr);
-                // add new result
-                analysisResults.Add(new AnalysisResult()
+                var tmp = sr;
+                tasks.Add(Task.Run(() =>
                 {
-                    SearchResult = sr.SearchResult,
-                    NaturalLanguagePercentage = naturalLanguagePercentage,
-                    TextScore = textScore,
-                    IsSuitable = naturalLanguagePercentage >= MinNaturalLanguagePercentage
-                });
+                    //// calculate natural language percentage by Zipf law
+                    //var naturalLanguagePercentageTask = zipfLawAnalyser.AnalyseTask(tmp);
+                    //naturalLanguagePercentageTask.Start();
+                    //// calculate text score by text ranking
+                    //var textScoreTask = textRankingAnalyser.AnalyseTask(tmp);
+                    //textScoreTask.Start();
+                    //// wait calculation is ended
+                    //Task.WaitAll(naturalLanguagePercentageTask, textScoreTask);
+                    //// get result
+                    //var naturalLanguagePercentage = naturalLanguagePercentageTask.Result;
+                    //var textScore = textScoreTask.Result;
+
+                    // calculate natural language percentage by Zipf law
+                    var naturalLanguagePercentage = zipfLawAnalyser.Analyse(tmp);
+                    // calculate text score by text ranking
+                    var textScore = textRankingAnalyser.Analyse(tmp);
+                    // add new result
+                    var newResult = new AnalysisResult()
+                    {
+                        SearchResult = tmp.SearchResult,
+                        NaturalLanguagePercentage = naturalLanguagePercentage,
+                        TextScore = textScore,
+                        IsSuitable = naturalLanguagePercentage >= MinNaturalLanguagePercentage
+                    };
+                    lock(analysisResults) analysisResults.Add(newResult);
+                    //// cleanup
+                    //naturalLanguagePercentageTask.Dispose();
+                    //textScoreTask.Dispose();
+                }));
             }
+
+            // wait while all tasks are ended
+            Task.WaitAll(tasks.ToArray(), CancellationToken.None);
+            // dispose all tasks
+            foreach (var t in tasks)
+                t.Dispose();
         }
 
         /// <summary>

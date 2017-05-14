@@ -10,6 +10,7 @@ using System.Net;
 using System.Text;
 using BrainySearch.Logic.Analysis;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace BrainySearch.Logic.Core
 {
@@ -32,8 +33,7 @@ namespace BrainySearch.Logic.Core
             searchResultsFilter = new SearchResultsFilter();
             keyWordsFilter = new KeyWordsFilter();
             brainySearchAnalyser = new BrainySearchAnalyser();
-            // TODO: should be unlimited
-            brainySearchService.SearchParameters.Limit = 80;
+            brainySearchService.SearchParameters.Limit = -1;
         }
 
         #endregion
@@ -42,19 +42,30 @@ namespace BrainySearch.Logic.Core
 
         public SearchResults<BrainySearchResult> BrainySearch(string searchString, string[] keyWords)
         {
-            // 1. Search
-            var searchResults = Search(searchString, keyWords);
-            if (searchResults.HasErrors || searchResults.Results.Count == 0) return BuildBrainySearchResult(searchResults);
-            // 2. Parse html and get clear text
-            ParsePageHtml(searchResults.Results);
-            // 3. Apply all text filters
-            FilterResultsByContent(searchResults.Results, keyWords);
-            // 4. Apply analysis filters and update search result sequence
-            if (keyWords != null) brainySearchAnalyser.KeyWords.AddRange(keyWords);
-            var analysisResult = brainySearchAnalyser.Analyse(searchResults.Results);
-
-            // 5. Build full result
-            return BuildBrainySearchResult(analysisResult);
+            if (string.IsNullOrEmpty(searchString)) return new SearchResults<BrainySearchResult>();
+            try
+            {
+                // 1. Search
+                var searchResults = Search(searchString, keyWords);
+                if (searchResults.HasErrors || searchResults.Results.Count == 0) return BuildBrainySearchResult(searchResults);
+                // 2. Parse html and get clear text
+                ParsePageHtml(searchResults.Results);
+                // 3. Apply all text filters
+                FilterResultsByContent(searchResults.Results, keyWords);
+                // 4. Apply analysis filters and update search result sequence
+                if (keyWords != null) brainySearchAnalyser.KeyWords.AddRange(keyWords);
+                var analysisResult = brainySearchAnalyser.Analyse(searchResults.Results);
+                UpdateAnalysisResults(analysisResult);
+                // 5. Build full result
+                return BuildBrainySearchResult(analysisResult);
+            }
+            catch(Exception ex)
+            {
+                // write error if it is
+                var searchResults = new SearchResults<BrainySearchResult>();
+                searchResults.ErrorMessage = ex.Message;
+                return searchResults;
+            }
         }
 
         #endregion
@@ -106,20 +117,31 @@ namespace BrainySearch.Logic.Core
             // init parsers
             var wikiParser = new WikipediaParser();
             var articleParser = new ArticleParser();
+            // create tasks for requests
+            var tasks = new List<Task>();
 
             foreach (var r in searchResults)
             {
-                try
-                {
-                    string data = GetHtmlResult(r.Link);
-                    if (string.IsNullOrEmpty(data)) continue;
+                var sr = r;
+                tasks.Add(Task.Run(() => {
+                    try
+                    {
+                        string data = GetHtmlResult(sr.Link);
+                        if (string.IsNullOrEmpty(data)) return;
 
-                    // parse html page by wiki parser on unknown page parser
-                    r.Text = r.Link.Contains("wikipedia.org") ? wikiParser.Parse(data) : articleParser.Parse(data);
-                }
-                catch (Exception)
-                { }
+                        // parse html page by wiki parser on unknown page parser
+                        sr.Text = sr.Link.Contains("wikipedia.org") ? wikiParser.Parse(data) : articleParser.Parse(data);
+                    }
+                    catch (Exception)
+                    { }
+                }));              
             }
+
+            // wait while all tasks are ended
+            Task.WaitAll(tasks.ToArray(), CancellationToken.None);
+            // dispose all tasks
+            foreach (var t in tasks)
+                t.Dispose();
         }
 
         /// <summary>
@@ -207,6 +229,18 @@ namespace BrainySearch.Logic.Core
 
             return sr;
         }
+        
+        /// <summary>
+        /// Updates analysis results
+        /// </summary>
+        private void UpdateAnalysisResults(List<AnalysisResult> searchResults)
+        {
+            foreach(var sr in searchResults.Where(item => item.SearchResult.Link.Contains("wikipedia.org")))
+            {
+                sr.IsSuitable = true;
+                sr.Index = -1;
+            }
+        }
 
         /// <summary>
         /// Returns brainy search result
@@ -258,14 +292,26 @@ namespace BrainySearch.Logic.Core
             // set key words
             keyWordsFilter.KeyWords.Clear();
             if (keyWords != null) keyWordsFilter.KeyWords.AddRange(keyWords);
+            keyWordsFilter.NormalizeKeyWords();
 
             // key: search result
             // value: key words count that search result contains
             var searchResultKeyWords = new Dictionary<ISearchResult, int>();
+            // tasks for getting key words count
+            var tasks = new List<Task>();
 
             // get key words for every result
-            foreach (var r in searchResults.Where(item => !resultsToRemove.Contains(item)))
-                searchResultKeyWords.Add(r, keyWordsFilter.GetContainedKeyWordsCount(r.Text));
+            foreach (var r in searchResults.Where(item => !resultsToRemove.Contains(item) && !item.Link.Contains("wikipedia.org")))
+            {
+                var tmp = r;
+                tasks.Add(Task.Run(() => searchResultKeyWords.Add(tmp, keyWordsFilter.GetContainedKeyWordsCount(tmp.Text))));
+            }
+
+            // wait all tasks are ended
+            Task.WaitAll(tasks.ToArray(), CancellationToken.None);
+            // dispose all tasks
+            foreach (var t in tasks)
+                t.Dispose();
 
             // get max counted key words in results
             int maxKeyWordsCount = searchResultKeyWords.Max(item => item.Value);

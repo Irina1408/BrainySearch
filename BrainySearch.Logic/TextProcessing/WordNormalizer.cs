@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YandexMystem.Wrapper;
+using YandexMystem.Wrapper.Models;
 
 namespace BrainySearch.Logic.TextProcessing
 {
@@ -52,9 +53,14 @@ namespace BrainySearch.Logic.TextProcessing
         public List<string> GetNormalizedWords(string text, bool distinct)
         {
             var words = new List<string>();
-            
+            // prepare text
+            text = text.Replace("\n", " ").Replace("\r", " ");
+            // normalize text
+            List<WordModel> normalizedWords;
+            lock (mysteam)
+                normalizedWords = mysteam.GetWords(text);
             // get normalized words list
-            foreach (var r in mysteam.GetWords(text.Replace("\n", " ").Replace("\r", " ")))
+            foreach (var r in normalizedWords)
             {
                 // if normalizer did no find any normalized word add source word
                 if(r.Lexems.Count == 0)

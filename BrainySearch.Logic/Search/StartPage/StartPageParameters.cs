@@ -14,6 +14,8 @@ namespace BrainySearch.Logic.Search.StartPage
     {
         public StartPageParameters() : base()
         {
+            // unlimited search (all results)
+            Limit = -1;
             LoadText = true;
         }
 
