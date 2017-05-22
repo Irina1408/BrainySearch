@@ -90,3 +90,29 @@ a:hover {
   width: 75%;
   background-color: white;
 }
+
+
+/* Link group */
+
+.link-group,
+.link-group-vertical {
+  position: relative;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+.link-group a + a,
+.link-group a + .link-group,
+.link-group .link-group + a,
+.link-group .link-group + .link-group {
+}
+
+/* Full page area */
+
+.textarea-fullpage{
+    max-width: none;
+    padding: 10px;
+    overflow: hidden; 
+    word-wrap: break-word; 
+    resize: horizontal; 
+    height: 52px;
+}

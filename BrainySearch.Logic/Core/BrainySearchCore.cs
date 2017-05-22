@@ -11,6 +11,7 @@ using System.Text;
 using BrainySearch.Logic.Analysis;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Web;
 
 namespace BrainySearch.Logic.Core
 {
@@ -106,6 +107,9 @@ namespace BrainySearch.Logic.Core
                 // remove last symbol "/"
                 if (sr.Link.EndsWith("/"))
                     sr.Link = sr.Link.Substring(0, sr.Link.Length - 1);
+
+                if(string.IsNullOrEmpty(sr.Title))
+                    sr.Title = HttpUtility.HtmlDecode(sr.Title);
             }
         }
 
@@ -130,7 +134,7 @@ namespace BrainySearch.Logic.Core
                         if (string.IsNullOrEmpty(data)) return;
 
                         // parse html page by wiki parser on unknown page parser
-                        sr.Text = sr.Link.Contains("wikipedia.org") ? wikiParser.Parse(data) : articleParser.Parse(data);
+                        sr.Text = HttpUtility.HtmlDecode(sr.Link.Contains("wikipedia.org") ? wikiParser.Parse(data) : articleParser.Parse(data));
                     }
                     catch (Exception)
                     { }

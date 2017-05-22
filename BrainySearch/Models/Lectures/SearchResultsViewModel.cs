@@ -17,6 +17,8 @@ namespace BrainySearch.Models.Lectures
         /// </summary>
         public List<SearchResultViewModel> Results { get; }
 
+        public int SearchNumber { get; set; }
+
         /// <summary>
         /// Error message if search was failed
         /// </summary>

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Search";
+    ViewBag.Title = "";
 }
 
 @section styles{
@@ -18,7 +18,7 @@
             <div class="form-group">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Lecture theme" id="lectureTheme">
+                        <input type="text" class="form-control" placeholder="Lecture theme" id="lectureTheme"/>
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -36,7 +36,7 @@
             <div class="form-group">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Key word" id="keyWord">
+                        <input type="text" class="form-control" placeholder="Key word" id="keyWord"/>
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -71,6 +71,9 @@
             <tbody id="searchResultItems"></tbody>
         </table>
     </div>
+    <div class="row" style="margin-left: 0px;">
+        <button type="submit" class="btn btn-default" id="createLecture">Create lecture</button>
+    </div>
 </div>
 
 @section Scripts{
@@ -78,6 +81,7 @@
 
         var keyWordNumber = 1;
         var keyWordArray = new Array();
+        var currSearchNumber = -1;
 
         function removeKeyWord() {
             var targetId = event.target.id;
@@ -95,7 +99,7 @@
         }
 
         $(document).ready(function () {
-            
+
             // add key word button handler
             $('#addKeyWord').click(function () {
                 var keyWordText = $('#keyWord').val();
@@ -103,7 +107,7 @@
                 {
                     // add to list
                     keyWordArray.push(keyWordText);
-                    
+
                     // add new control
                     var newKeyWord = "<a class='keyword-active remove-icon' id='keyWord" + keyWordNumber + "' onclick='removeKeyWord()'>" + keyWordText + "</a>";
                     $(newKeyWord).appendTo('#keyWordsContainer');
@@ -124,7 +128,7 @@
                 $("#searching").css('display', 'block');
                 // show process loading label
                 $("#searchingProcess").css('display', 'block');
-                $("#searchingProcessLabel").css('value', 'Searching...');
+                $("#searchingProcessLabel").html('Searching...');
 
                 var d = {};
                 d.lectureTheme = $('#lectureTheme').val();
@@ -138,28 +142,59 @@
                 });
             });
 
+            // create lecture button click handler
+            $('#createLecture').click(function () {
+                var srIds = new Array();
+                var rows = $('tBody#searchResultItems').find('tr');
+                for (var i = 0; i < rows.length; i++) {
+                    var resId = $(rows[i]).find('td:eq(0)').html();
+                    var includeRes = document.querySelector("#res" + resId).checked;
+                    if (includeRes)
+                    {
+                        srIds.push(resId);
+                    }
+                }
+                var d = {};
+                d.searchResultIds = srIds;
+                d.searchNumber = currSearchNumber;
+                console.log("data", d);
+
+                @*var tmpUrl = window.location.origin +
+                    '@Url.Action("CreateLecture", "Home")' + '/?' + $.param(d, true);
+
+                window.location.href = tmpUrl;*@
+
+                var tmpUrl = window.location.origin +
+                    '@Url.Action("CreateLecture", "Lectures")' + '/?' + $.param(d, true);
+
+                window.location.href = tmpUrl;
+            });
+
             // show search result
             function writeSearchResult(data) {
                 // clear div searchResultItems
                 $("#searchResultItems").empty();
+                // update search number
+                currSearchNumber = data.SearchNumber;
 
                 if (data.HasErrors)
                 {
-                    $("#searchingProcessLabel").css('value', data.ErrorMessage);
+                    $("#searchingProcessLabel").html(data.ErrorMessage);
                 }
                 else
                 {
                     for (var i = 0; i < data.Results.length; i++) {
                         var newRow = "<tr>"
+                                        + "<td style='display: none;'>" + data.Results[i].Id + "</td>"
                                         + "<td width='3%'>"
-                                            + "<input type='checkbox' width='min-content' checked=" + data.Results[i].AddToLecture + " />"
+                                            + "<input type='checkbox' width='min-content' id='res" + data.Results[i].Id + "' checked='true' />"
                                         + "</td>"
                                         + "<td>"
                                             + "<label class='control-label'>" + data.Results[i].Title + "</label>"
-                                            + "<div class='row'><label class='control-label' style='font-weight: normal;'>" + data.Results[i].Text + "</label></div>"
+                                            + "<div class='row'><label class='control-label' style='font-weight: normal;'>" + data.Results[i].Html + "</label></div>"
                                         + "</td>"
                                         + "<td>"
-                                            + "<a style='word-wrap:break-word' href=" + data.Results[i].SourceLink + ">" + data.Results[i].ShortLink + "</a>"
+                                            + "<a style='word-wrap:break-word' id='link" + data.Results[i].Id + "' href=" + data.Results[i].SourceLink + ">" + data.Results[i].ShortLink + "</a>"
                                         + "</td>"
                                         + "</tr>";
                         $(newRow).appendTo('#searchResultItems');
@@ -169,7 +204,7 @@
                     $("#searchingProcess").css('display', 'none');
                     // show tbody searchResultContainer
                     $("#searchResultContainer").css('display', 'block');
-                }                
+                }
             }
         });
     </script>

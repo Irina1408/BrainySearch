@@ -1,4 +1,6 @@
 ﻿using BrainySearch.Logic.Core;
+using BrainySearch.Logic.Search.Base;
+using BrainySearch.Models;
 using BrainySearch.Models.Lectures;
 using Microsoft.Web.Mvc;
 using Newtonsoft.Json;
@@ -9,11 +11,14 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace BrainySearch.Controllers
 {
     public class HomeController : Controller
     {
+        private static int SearchCount = 0;
+
         public ActionResult Index()
         {
             return View();
@@ -36,12 +41,33 @@ namespace BrainySearch.Controllers
         [HttpGet]
         public ActionResult Search(string lectureTheme, string[] keyWords)
         {
-            var res = new SearchResultsViewModel();
+            // update search count
+            SearchCount++;
+            // local variables
+            var res = new SearchResultsViewModel() { SearchNumber = SearchCount };
             var searchService = new BrainySearchCore();
             var searchResult = searchService.BrainySearch(lectureTheme, keyWords);
 
-            if(!searchResult.HasErrors)
+            // --- TESTS
+            //var searchResult = new SearchResults<BrainySearchResult>();
+            //searchResult.Results.Add(new BrainySearchResult()
+            //{
+            //    Link = "https://vk.com/feed",
+            //    Html = "Some html",
+            //    Title = "VK",
+            //    Text = "Some interesting text."
+            //});
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    searchResult.Results[0].Html += " My so long text.";
+            //    searchResult.Results[0].Text += " My so long text.";
+            //}
+            // --- TESTS
+
+            if (!searchResult.HasErrors)
             {
+                var index = 1;
+
                 foreach (var sr in searchResult.Results.OrderBy(item => item.Index))
                 {
                     // create short link for view
@@ -55,9 +81,10 @@ namespace BrainySearch.Controllers
 
                     res.Results.Add(new SearchResultViewModel
                     {
+                        Id = index++,
                         Title = sr.Title,
-                        Text = sr.Html,
-                        AddToLecture = true,
+                        Text = sr.Text,
+                        Html = sr.Html,
                         SourceLink = sr.Link,
                         ShortLink = shortLink
                     });
@@ -65,8 +92,34 @@ namespace BrainySearch.Controllers
             }
             else
                 res.ErrorMessage = searchResult.ErrorMessage;
+            
+            // keep found results
+            Session[SharedData.SearchResultsKeyName + res.SearchNumber] = res.Results.ToArray();
+            Session[SharedData.LectureThemeKeyName + res.SearchNumber] = lectureTheme;
+            Session[SharedData.KeyWordsKeyName + res.SearchNumber] = keyWords;
 
             return Content(JsonConvert.SerializeObject(res));
         }
+
+        //[HttpGet]
+        //public ActionResult CreateLecture(int searchNumber, int[] searchResultIds)
+        //{
+        //    // get data
+        //    //SearchResultViewModel[] searchResults = Session[SharedData.SearchResultsKeyName + searchNumber] as SearchResultViewModel[];
+        //    //string lectureTheme = Session[SharedData.LectureThemeKeyName + searchNumber] as string;
+        //    //string[] keyWords = Session[SharedData.KeyWordsKeyName + searchNumber] as string[];
+
+        //    // clean data
+        //    //Session.Remove(SearchResultsKeyName + searchNumber);
+        //    //Session.Remove(LectureThemeKeyName + searchNumber);
+        //    //Session.Remove(KeyWordsKeyName + searchNumber);
+
+        //    //TempData["lectureTheme"] = lectureTheme;
+        //    //TempData["keyWords"] = keyWords;
+        //    //TempData["searchResults"] = searchResults.Where(item => searchResultIds.Any(it => it == item.Id)).ToArray();
+        //    TempData["searchNumber"] = searchNumber;
+
+        //    return RedirectToAction("LectureEditing", "Lectures", true);
+        //}
     }
 }

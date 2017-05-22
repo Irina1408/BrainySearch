@@ -15,6 +15,8 @@ namespace BrainySearch.Data.Models
 
         public string SourceLink { get; set; }
 
+        public string Title { get; set; }
+
         public string Text { get; set; }
 
         public Guid LectureId { get; set; }

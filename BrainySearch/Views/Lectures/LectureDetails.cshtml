@@ -1,0 +1,89 @@
+﻿@model BrainySearch.Models.Lectures.LectureDetailsViewModel
+@{
+    ViewBag.Title = "Lecture details";
+}
+
+@section styles{
+    <link href="~/Content/keywords.css" rel="stylesheet" type="text/css" />
+}
+
+<h1>@Model.LectureTheme</h1>
+
+@* Key words *@
+<div class="row">
+    <div class="col-sm-6 col-md-2">
+        <h3 class='control-label' style="margin-top: 10px">Key words:</h3>
+    </div>
+    <div class="col-sm-6 col-md-10">
+        <div id="keyWordsContainer" class="keyword-group" style="margin-top: 10px; margin-left: -10px" role="group">
+        </div>
+    </div>
+</div>
+
+@* Links *@
+<div class="row" style="margin-top: 15px;">
+    <div class="col-sm-6 col-md-2">
+        <h3 class='control-label' style="margin-top: 10px">Links:</h3>
+    </div>
+    <div class="col-sm-6 col-md-10">
+        <div id="linksContainer" class="link-group" style="margin-top: 15px" role="group">
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 15px; margin-left: 0px;">
+    <label>@Model.Text</label>
+</div>
+
+@*@using (Html.BeginForm("", "AdminUser", new { area = "Admin" }, FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.LabelFor(model => model.Text)
+        @Html.EditorFor(model => model.Text, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+}*@
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        // function for showing key words
+        function ShowKeyWords() {
+            var keyWordsArr = [@Html.Raw(String.Join("][", Json.Encode(Model.KeyWords)))];
+            var keyWordsArray = keyWordsArr.pop();
+            console.log("keyWordsArray", keyWordsArray);
+            for (var i = 0; i < keyWordsArray.length; i++) {
+                console.log("keyWordsArray item", keyWordsArray[i]);
+                // add new control for every key word
+                var newKeyWord = "<a class='keyword-active' style='padding-right: 10px'>" + keyWordsArray[i] + "</a>";
+                $(newKeyWord).appendTo('#keyWordsContainer');
+            }
+        }
+
+        function ShowLinks() {
+            var resultsArr = [@Html.Raw(String.Join("][", Json.Encode(Model.Results)))];
+            var resultsArray = resultsArr.pop();
+            console.log("resultsArray", resultsArray);
+            for (var i = 0; i < resultsArray.length; i++) {
+                // add new control for every key word
+                var newLink = "<a style='word-wrap:break-word' href=" + resultsArray[i].SourceLink + ">" + resultsArray[i].ShortLink + "</a>";
+                $(newLink).appendTo('#linksContainer');
+            }
+        }
+
+        $(window).load(function () {
+            // show key words
+            ShowKeyWords();
+            // show links
+            ShowLinks();
+        });
+
+        $(document).ready(function () {
+             
+        });
+
+    </script>
+}

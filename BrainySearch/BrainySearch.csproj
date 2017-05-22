@@ -225,9 +225,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Lectures\LectureDetailsViewModel.cs" />
+    <Compile Include="Models\Lectures\LecturesListViewModel.cs" />
     <Compile Include="Models\Lectures\SearchResultsViewModel.cs" />
     <Compile Include="Models\Lectures\SearchResultViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\SharedData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -246,6 +249,8 @@
     <Content Include="mystem.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\autosize.js" />
+    <Content Include="Scripts\autosize.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
@@ -304,6 +309,8 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Lectures\Index.cshtml" />
+    <Content Include="Views\Lectures\LectureEditing.cshtml" />
+    <Content Include="Views\Lectures\LectureDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

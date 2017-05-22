@@ -132,6 +132,8 @@ namespace BrainySearch.Logic.Analysis
         {
             // get max text score for using as 100%
             decimal maxTextScore = analysisResults.Max(item => item.TextScore);
+            if (maxTextScore == 0)
+                maxTextScore = 1;
 
             int index = 1;
             // sort in the arithmetic mean of NaturalLanguagePercentage and TextScore percentage
