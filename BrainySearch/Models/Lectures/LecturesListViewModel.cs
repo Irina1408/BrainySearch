@@ -7,6 +7,11 @@ namespace BrainySearch.Models.Lectures
 {
     public class LecturesListViewModel
     {
-        
+        public LecturesListViewModel()
+        {
+            Lectures = new List<LectureDetailsViewModel>();
+        }
+
+        public List<LectureDetailsViewModel> Lectures { get; set; }
     }
 }

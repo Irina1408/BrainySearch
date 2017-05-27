@@ -28,7 +28,7 @@ namespace BrainySearch.Data
 
         public DbSet<InitialInfo> InitialInfos { get; set; }
         public DbSet<Lecture> Lectures { get; set; }
-        public DbSet<Word> Words { get; set; }
+        public DbSet<KeyWord> KeyWords { get; set; }
 
         public static ApplicationDbContext Create()
         {

@@ -1,16 +1,20 @@
-﻿@{
+﻿@model BrainySearch.Models.Lectures.LecturesListViewModel
+@{
     ViewBag.Title = "Lectures";
 }
 
-<div class="jumbotron">
-    <h1>Here will be list of lectures</h1>
+<div>
+    @foreach (var lecture in Model.Lectures)
+    {
+        <div class="jumbotron">
+            <h2>@lecture.LectureTheme</h2>
+            <p>@lecture.ShortText</p>
+            <div style="text-align:right;">
+                @Html.ActionLink("Show details...", "LectureDetails", "Lectures", new { lectureId = lecture.LectureId }, new { @style = "font-size:18px;text-decoration:underline;" })
+            </div>
+        </div>
+    }
 </div>
-
-@using (Html.BeginForm("TestMethod", "Lectures", FormMethod.Post))
-{
-    @*@Html.AntiForgeryToken()
-    <input type="submit" value="Test" class="btn btn-default" />*@
-}
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

@@ -11,6 +11,7 @@ namespace BrainySearch.Data.Models
     public class InitialInfo
     {
         [Key]
+        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
         public string SourceLink { get; set; }

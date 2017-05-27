@@ -18,5 +18,10 @@
         public LectureService(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
         {
         }
+
+        public override Lecture GetById(Guid id)
+        {
+            return applicationDbContext.Lectures.FirstOrDefault(item => item.Id == id);
+        }
     }
 }

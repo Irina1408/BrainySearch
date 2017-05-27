@@ -81,7 +81,7 @@
 
         var keyWordNumber = 1;
         var keyWordArray = new Array();
-        var currSearchNumber = -1;
+        //var currSearchNumber = -1;
 
         function removeKeyWord() {
             var targetId = event.target.id;
@@ -156,7 +156,7 @@
                 }
                 var d = {};
                 d.searchResultIds = srIds;
-                d.searchNumber = currSearchNumber;
+                //d.searchNumber = currSearchNumber;
                 console.log("data", d);
 
                 @*var tmpUrl = window.location.origin +
@@ -175,7 +175,7 @@
                 // clear div searchResultItems
                 $("#searchResultItems").empty();
                 // update search number
-                currSearchNumber = data.SearchNumber;
+                //currSearchNumber = data.SearchNumber;
 
                 if (data.HasErrors)
                 {
@@ -194,7 +194,7 @@
                                             + "<div class='row'><label class='control-label' style='font-weight: normal;'>" + data.Results[i].Html + "</label></div>"
                                         + "</td>"
                                         + "<td>"
-                                            + "<a style='word-wrap:break-word' id='link" + data.Results[i].Id + "' href=" + data.Results[i].SourceLink + ">" + data.Results[i].ShortLink + "</a>"
+                                            + "<a style='word-wrap:break-word' id='link" + data.Results[i].Id + "' href=" + data.Results[i].LinkInfo.SourceLink + ">" + data.Results[i].LinkInfo.ShortLink + "</a>"
                                         + "</td>"
                                         + "</tr>";
                         $(newRow).appendTo('#searchResultItems');

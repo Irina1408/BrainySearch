@@ -1,21 +1,10 @@
 ﻿@model BrainySearch.Models.Lectures.LectureDetailsViewModel
 @{
-    ViewBag.Title = "Lecture editing";
+    ViewBag.Title = "Lecture details";
 }
 
 @section styles{
     <link href="~/Content/keywords.css" rel="stylesheet" type="text/css" />
-
-    <style>
-        .textarea-fullpage{
-            max-width: none;
-            padding: 10px;
-            overflow: hidden;
-            word-wrap: break-word;
-            resize: horizontal;
-            height: 52px;
-        }
-    </style>    
 }
 
 <h1>@Model.LectureTheme</h1>
@@ -42,18 +31,12 @@
     </div>
 </div>
 
-@using (Html.BeginForm("SaveLecture", "Lectures", new { area = "Admin" }, FormMethod.Post))
-{
-    <div class="row" style="margin-left: 0px;">
-        @Html.TextAreaFor(model => model.Text, new { @class = "textarea-fullpage", cols = 150 })
-    </div>
-
-    <button  style="margin-top: 10px" type="submit" class="btn btn-success">Save</button>
-}
+<div class="row" style="margin-top: 15px; margin-left: 0px;">
+    <label>@Model.Text</label>
+</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/Scripts/autosize.min.js")
 
     <script type="text/javascript">
 
@@ -89,10 +72,8 @@
         });
 
         $(document).ready(function () {
-
+             
         });
-
-        autosize(document.querySelectorAll('textarea'));
 
     </script>
 }

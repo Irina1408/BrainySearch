@@ -64,10 +64,9 @@
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\Lecture.cs" />
     <Compile Include="Models\InitialInfo.cs" />
-    <Compile Include="Models\Word.cs" />
+    <Compile Include="Models\KeyWord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />

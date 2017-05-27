@@ -15,8 +15,6 @@ namespace BrainySearch.Models.Lectures
 
         public string Text { get; set; }
 
-        public string SourceLink { get; set; }
-
-        public string ShortLink { get; set; }
+        public LinkInfo LinkInfo { get; set; }
     }
 }

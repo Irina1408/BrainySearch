@@ -31,6 +31,7 @@ body {
 /*
     Default style for button
 */
+
 .btn {
     color: #2A8E00;
     background: #BAF46E;
@@ -40,13 +41,6 @@ body {
 .btn:focus {
     color: #2A8E00;
     background: #D7F9A9;
-}
-/*
-    Rectangle on the page
-*/
-.jumbotron {
-    /*margin-top: 20px;*/
-    background-color: #CDD7D6;
 }
 
 .navbar-brand {
@@ -115,4 +109,11 @@ a:hover {
     word-wrap: break-word; 
     resize: horizontal; 
     height: 52px;
+}
+
+.jumbotron {
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 18px;
+  background-color: #eeeeee;
 }

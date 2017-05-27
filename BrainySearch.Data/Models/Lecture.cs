@@ -12,11 +12,12 @@ namespace BrainySearch.Data.Models
     {
         public Lecture()
         {
-            KeyWords = new List<Word>();
+            KeyWords = new List<KeyWord>();
             InitialInfos = new List<InitialInfo>();
         }
 
         [Key]
+        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
         [Required]
@@ -29,7 +30,7 @@ namespace BrainySearch.Data.Models
         [ForeignKey(nameof(UserId))]
         public virtual ApplicationUser User { get; set; }
 
-        public virtual ICollection<Word> KeyWords { get; set; }
+        public virtual ICollection<KeyWord> KeyWords { get; set; }
 
         public virtual ICollection<InitialInfo> InitialInfos { get; set; }
     }

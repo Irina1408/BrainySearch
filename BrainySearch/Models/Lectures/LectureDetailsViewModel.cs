@@ -5,6 +5,8 @@ using System.Web;
 
 namespace BrainySearch.Models.Lectures
 {
+    
+
     public class LectureDetailsViewModel
     {        
         public Guid LectureId { get; set; }
@@ -13,8 +15,10 @@ namespace BrainySearch.Models.Lectures
 
         public string[] KeyWords { get; set; }
 
-        public SearchResultViewModel[] Results { get; set; }
+        public LinkInfo[] Links { get; set; }
 
         public string Text { get; set; }
+
+        public string ShortText { get { return Text.Length > 500 ? Text.Substring(0, 500) + "..." : Text; } }
     }
 }

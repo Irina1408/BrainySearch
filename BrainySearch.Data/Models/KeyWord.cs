@@ -8,19 +8,18 @@ using System.Threading.Tasks;
 
 namespace BrainySearch.Data.Models
 {
-    public class Word
+    public class KeyWord
     {
-        public Word()
-        {
-            Lectures = new List<Lecture>();
-        }
-
         [Key]
+        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
-        [Required, Column("Word")]
-        public string WordText { get; set; }
+        [Required, Column("KeyWord")]
+        public string KeyWordText { get; set; }
 
-        public virtual ICollection<Lecture> Lectures { get; set; }
+        public Guid LectureId { get; set; }
+
+        [ForeignKey(nameof(LectureId))]
+        public virtual Lecture Lecture { get; set; }
     }
 }

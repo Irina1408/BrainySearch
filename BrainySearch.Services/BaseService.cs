@@ -10,14 +10,13 @@
     public interface IBaseService<T>
         where T : class
     {
-        Task<List<T>> GetAll();
-        Task<T> GetById(Guid id);
-
-        Task<T> Create();
-        Task Add(T item);
-        Task Delete(T item);
-        Task DeleteById(Guid id);
-        Task Save();
+        List<T> GetAll();
+        T GetById(Guid id);
+        
+        void Add(T item);
+        void Delete(T item);
+        void DeleteById(Guid id);
+        void Save();
     }
 
     public class BaseService<T> : IBaseService<T>
@@ -30,47 +29,42 @@
             this.applicationDbContext = applicationDbContext;
         }
 
-        virtual public async Task<List<T>> GetAll()
+        virtual public List<T> GetAll()
         {
-            return await applicationDbContext.Set<T>().ToListAsync();
+            return applicationDbContext.Set<T>().ToList();
         }
 
-        virtual public async Task<T> GetById(Guid id)
+        virtual public T GetById(Guid id)
         {
             var propertyInfo = typeof(T).GetProperties()
                 .FirstOrDefault(item => item.Name == "Id" && item.CanRead && item.PropertyType == typeof(Guid));
 
             if (propertyInfo == null) return null;
-            else return await applicationDbContext.Set<T>().FirstOrDefaultAsync(item => (Guid)propertyInfo.GetValue(item) == id);
+            else return  applicationDbContext.Set<T>().FirstOrDefault(item => (Guid)propertyInfo.GetValue(item) == id);
         }
 
-        virtual public async Task<T> Create()
+        virtual public void Add(T item)
         {
-            return await new Task<T>(() => new T());
+            applicationDbContext.Set<T>().Add(item);
         }
 
-        virtual public async Task Add(T item)
+        virtual public void Delete(T item)
         {
-            await new Task(() => applicationDbContext.Set<T>().Add(item));
+            applicationDbContext.Set<T>().Remove(item);
         }
 
-        virtual public async Task Delete(T item)
-        {
-            await new Task(() => applicationDbContext.Set<T>().Remove(item));
-        }
-
-        virtual public async Task DeleteById(Guid id)
+        virtual public void DeleteById(Guid id)
         {
             var propertyInfo = typeof(T).GetProperties()
                    .FirstOrDefault(item => item.Name == "Id" && item.CanRead && item.PropertyType == typeof(Guid));
 
             if (propertyInfo == null) return;
-            await Delete(applicationDbContext.Set<T>().FirstOrDefault(item => (Guid)propertyInfo.GetValue(item) == id));
+            Delete(applicationDbContext.Set<T>().FirstOrDefault(item => (Guid)propertyInfo.GetValue(item) == id));
         }
 
-        virtual public async Task Save()
+        virtual public void Save()
         {
-            await applicationDbContext.SaveChangesAsync();
+            applicationDbContext.SaveChanges();
         }
     }
 }
