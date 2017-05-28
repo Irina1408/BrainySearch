@@ -10,11 +10,6 @@ namespace BrainySearch.Logic.Core
     public class BrainySearchResult : SearchResult
     {
         /// <summary>
-        /// Html of the page part with correct search result
-        /// </summary>
-        public string Html { get; set; }
-
-        /// <summary>
         /// Index in the sequence
         /// </summary>
         public int Index { get; set; }

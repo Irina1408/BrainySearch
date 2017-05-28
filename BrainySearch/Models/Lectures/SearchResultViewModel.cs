@@ -11,7 +11,7 @@ namespace BrainySearch.Models.Lectures
 
         public string Title { get; set; }
 
-        public string Html { get; set; }
+        public string Html { get { return string.Format("<p>{0}</p>", Text.Replace("\n", "</p><p>")); } }
 
         public string Text { get; set; }
 

@@ -55,11 +55,7 @@
 
         virtual public void DeleteById(Guid id)
         {
-            var propertyInfo = typeof(T).GetProperties()
-                   .FirstOrDefault(item => item.Name == "Id" && item.CanRead && item.PropertyType == typeof(Guid));
-
-            if (propertyInfo == null) return;
-            Delete(applicationDbContext.Set<T>().FirstOrDefault(item => (Guid)propertyInfo.GetValue(item) == id));
+            Delete(GetById(id));
         }
 
         virtual public void Save()

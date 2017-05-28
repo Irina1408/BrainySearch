@@ -1,0 +1,59 @@
+﻿@model BrainySearch.Models.Lectures.LectureDetailsViewModel
+@{
+    ViewBag.Title = "Lecture details";
+}
+
+@section styles{
+    <link href="~/Content/keywords.css" rel="stylesheet" type="text/css" />
+}
+
+<div class="row" style="margin-top: 50px;"> 
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+    @Html.ActionLink("Back to list", "Index", "Lectures", null, new { @class = "action-link" })
+    @Html.ActionLink("Edit", "Edit", "Lectures", new { lectureId = Model.LectureId }, new { @class = "action-link", @style = "margin-left:20px"})
+    @Html.ActionLink("Delete", "Delete", "Lectures", new { lectureId = Model.LectureId },
+                    new { onclick = "return confirm('Are you sure you wish to delete this lecture?');", @class = "action-link", @style = "margin-left:10px" })
+</div>
+
+<h1 style="margin-top: 20px;">@Model.LectureTheme</h1>
+
+@* Key words *@
+@if (Model.KeyWords.Count > 0)
+{
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-sm-6 col-md-2" style="width: 11%;">
+            <h4>Key words:</h4>
+        </div>
+        <div class="col-sm-6 col-md-10" style="margin-left: -30px; margin-top: 3px;">
+            <div class="keyword-group" role="group">
+                @foreach (var keyWord in Model.KeyWords)
+                {
+                    <a class='keyword-active' style='padding-right: 10px'>@keyWord</a>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@* Links *@
+<div class="row" style="margin-top: 0px;">
+    <div class="col-sm-6 col-md-1" style="width: 5%;">
+        <h4>Links:</h4>
+    </div>
+    <div class="col-sm-6 col-md-10" style="margin-top: 10px">
+        <div class="link-group" role="group">
+            @foreach (var linkInfo in Model.Links)
+            {
+                <a class="a-link" style='word-wrap:break-word' href='@linkInfo.SourceLink'>@linkInfo.ShortLink</a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 15px; margin-left: 0px;">
+    <p>@Model.Html</p>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

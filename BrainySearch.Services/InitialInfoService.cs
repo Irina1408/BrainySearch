@@ -20,15 +20,20 @@
         public InitialInfoService(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
         {
         }
-        
+
+        public override InitialInfo GetById(Guid id)
+        {
+            return applicationDbContext.InitialInfoes.FirstOrDefault(item => item.Id == id);
+        }
+
         public List<InitialInfo> GetAllByLectureIds(Guid[] lectureIds)
         {
-            return applicationDbContext.InitialInfos.Where(item => lectureIds.Contains(item.LectureId)).ToList();
+            return applicationDbContext.InitialInfoes.Where(item => lectureIds.Contains(item.LectureId)).ToList();
         }
 
         public List<InitialInfo> GetAllByLectureId(Guid lectureId)
         {
-            return applicationDbContext.InitialInfos.Where(item => item.LectureId == lectureId).ToList();
+            return applicationDbContext.InitialInfoes.Where(item => item.LectureId == lectureId).ToList();
         }
     }
 }

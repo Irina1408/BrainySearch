@@ -7,10 +7,18 @@
     @foreach (var lecture in Model.Lectures)
     {
         <div class="jumbotron">
-            <h2>@lecture.LectureTheme</h2>
-            <p>@lecture.ShortText</p>
+
+            <a href="@Url.Action("Details", "Lectures", new { lectureId = lecture.LectureId })"><h2>@lecture.LectureTheme</h2></a>
+            <a href="@Url.Action("Details", "Lectures", new { lectureId = lecture.LectureId })"><p>@lecture.ShortHtml</p></a>
+
             <div style="text-align:right;">
-                @Html.ActionLink("Show details...", "LectureDetails", "Lectures", new { lectureId = lecture.LectureId }, new { @style = "font-size:18px;text-decoration:underline;" })
+
+                @Html.ActionLink("Edit", "Edit", "Lectures", new { lectureId = lecture.LectureId },
+                    new { @class = "action-link" })
+
+                @Html.ActionLink("Delete", "Delete", "Lectures", new { lectureId = lecture.LectureId },
+                    new { onclick = "return confirm('Are you sure you wish to delete this lecture?');", @class = "action-link", @style = "margin-left:10px" })
+            
             </div>
         </div>
     }

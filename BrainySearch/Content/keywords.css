@@ -34,7 +34,7 @@
 .remove-icon, 
 .remove-icon:active {
     position: absolute;
-    background-image: url("Images/Remove.png")!important; 
+    background-image: url("Images/Remove.png"); 
     background-repeat: no-repeat;  
     background-position: right;  
 }

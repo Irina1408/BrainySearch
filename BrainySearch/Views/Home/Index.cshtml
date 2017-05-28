@@ -6,7 +6,7 @@
     <link href="~/Content/keywords.css" rel="stylesheet" type="text/css" />
 }
 
-<h1> Search info</h1>
+@*<h1> Search info</h1>*@
 <hr />
 <div class="row">
     <div class="col-sm-6 col-md-6">
@@ -165,7 +165,7 @@
                 window.location.href = tmpUrl;*@
 
                 var tmpUrl = window.location.origin +
-                    '@Url.Action("CreateLecture", "Lectures")' + '/?' + $.param(d, true);
+                    '@Url.Action("Create", "Lectures")' + '/?' + $.param(d, true);
 
                 window.location.href = tmpUrl;
             });
@@ -181,6 +181,10 @@
                 {
                     $("#searchingProcessLabel").html(data.ErrorMessage);
                 }
+                else if (data.Results.length == 0)
+                {
+                    $("#searchingProcessLabel").html("No results found");
+                }
                 else
                 {
                     for (var i = 0; i < data.Results.length; i++) {
@@ -194,7 +198,7 @@
                                             + "<div class='row'><label class='control-label' style='font-weight: normal;'>" + data.Results[i].Html + "</label></div>"
                                         + "</td>"
                                         + "<td>"
-                                            + "<a style='word-wrap:break-word' id='link" + data.Results[i].Id + "' href=" + data.Results[i].LinkInfo.SourceLink + ">" + data.Results[i].LinkInfo.ShortLink + "</a>"
+                                            + "<a class='a-link' style='word-wrap:break-word' id='link" + data.Results[i].Id + "' href=" + data.Results[i].LinkInfo.SourceLink + ">" + data.Results[i].LinkInfo.ShortLink + "</a>"
                                         + "</td>"
                                         + "</tr>";
                         $(newRow).appendTo('#searchResultItems');

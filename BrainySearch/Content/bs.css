@@ -33,13 +33,13 @@ body {
 */
 
 .btn {
-    color: #2A8E00;
+    color: #1F6402;
     background: #BAF46E;
 }
 
 .btn:hover,
 .btn:focus {
-    color: #2A8E00;
+    color: #1F6402;
     background: #D7F9A9;
 }
 
@@ -55,18 +55,22 @@ h1, h2 {
     margin-top: 40px;
 }
 
-a {
-    color: #2A8E00;
+a, i {
+    color: #1F6402;
 }
 
-a:hover {
-    color: #2A8E00;
+a:hover, i:hover {
+    color: #1F6402;
 }
 
 /*hr {
     right: 0;
     left: 0;
 }*/
+
+.a-link {
+    text-decoration: underline;
+}
 
 .btn,
 .input-sm,
@@ -75,7 +79,7 @@ a:hover {
 .input-group-lg > .form-control,
 .input-group-lg > .input-group-addon,
 .input-group-lg > .input-group-btn > .btn {
-    border-radius: 0px;
+    border-radius: 0;
 }
 
 .footer {
@@ -94,6 +98,7 @@ a:hover {
   vertical-align: middle;
   margin-right: 5px;
 }
+
 .link-group a + a,
 .link-group a + .link-group,
 .link-group .link-group + a,
@@ -115,5 +120,29 @@ a:hover {
   padding: 10px;
   margin-bottom: 20px;
   font-size: 18px;
-  background-color: #eeeeee;
+  background-color: #F1F4F1;
+}
+
+.container .jumbotron {
+  border-radius: 0;
+}
+
+.panel {
+    border-radius: 0;
+}
+
+.panel-default > .panel-heading {
+  background-color: #BAF46E;
+}
+
+.panel-heading {
+    font-size: 16px;
+    color: #1F6402;
+    border-radius: 0;
+}
+
+.action-link {
+    font-size:16px;
+    text-decoration:underline;
+    font-style: italic;
 }

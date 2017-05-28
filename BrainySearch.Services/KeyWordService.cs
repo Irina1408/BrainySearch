@@ -21,6 +21,11 @@
         {
         }
 
+        public override KeyWord GetById(Guid id)
+        {
+            return applicationDbContext.KeyWords.FirstOrDefault(item => item.Id == id);
+        }
+
         public List<KeyWord> GetAllByLectureIds(Guid[] lectureIds)
         {
             return applicationDbContext.KeyWords.Where(item => lectureIds.Contains(item.LectureId)).ToList();

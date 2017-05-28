@@ -24,7 +24,7 @@ namespace BrainySearch.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "It is a good decision for resolving your problems. Brainy search can halp you to find only necessary information.";
+            ViewBag.Message = "It is a good decision for resolving your problems. Brainy search can help you to find only necessary information.";
 
             return View();
         }
@@ -42,22 +42,18 @@ namespace BrainySearch.Controllers
             // local variables
             var res = new SearchResultsViewModel();
             var searchService = new BrainySearchCore();
-            //var searchResult = searchService.BrainySearch(lectureTheme, keyWords);
+            var searchResult = searchService.BrainySearch(lectureTheme, keyWords);
 
             // --- TESTS
-            var searchResult = new SearchResults<BrainySearchResult>();
-            searchResult.Results.Add(new BrainySearchResult()
-            {
-                Link = "https://vk.com/feed",
-                Html = "Some html",
-                Title = "VK",
-                Text = "Some interesting text."
-            });
-            for (int i = 0; i < 100; i++)
-            {
-                searchResult.Results[0].Html += " My so long text.";
-                searchResult.Results[0].Text += " My so long text.";
-            }
+            //var searchResult = new SearchResults<BrainySearchResult>();
+            //searchResult.Results.Add(new BrainySearchResult()
+            //{
+            //    Link = "https://vk.com/feed",
+            //    Title = "VK",
+            //    Text = "Some interesting text."
+            //});
+            //for (int i = 0; i < 100; i++)
+            //    searchResult.Results[0].Text += " My so long text.";
             // --- TESTS
 
             if (!searchResult.HasErrors)
@@ -71,18 +67,21 @@ namespace BrainySearch.Controllers
                         Id = index++,
                         Title = sr.Title,
                         Text = sr.Text,
-                        Html = sr.Html,
                         LinkInfo = new LinkInfo() { SourceLink = sr.Link }
                     });
                 }
             }
             else
                 res.ErrorMessage = searchResult.ErrorMessage;
-            
+
+            var keyWordsList = new List<string>();
+            if (keyWords != null)
+                keyWordsList.AddRange(keyWords);
+
             // keep found results
             Session[SharedData.SearchResultsKeyName] = res.Results.ToArray();
             Session[SharedData.LectureThemeKeyName] = lectureTheme;
-            Session[SharedData.KeyWordsKeyName] = keyWords;
+            Session[SharedData.KeyWordsKeyName] = keyWordsList;
 
             return Content(JsonConvert.SerializeObject(res));
         }

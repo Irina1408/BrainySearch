@@ -228,8 +228,8 @@ namespace BrainySearch.Logic.Core
             var sr = new SearchResults<BrainySearchResult>() { ErrorMessage = searchResults.ErrorMessage };
             sr.Results.AddRange(searchResults.Results.Select(item => new BrainySearchResult()
                 { Title = item.Title, Link = item.Link, Text = item.Text }));
-            // build html for correct text showing
-            BuildResultHtml(sr);
+            // clean text for correct text showing
+            CleanResultText(sr);
 
             return sr;
         }
@@ -260,24 +260,25 @@ namespace BrainySearch.Logic.Core
                 Text = item.SearchResult.Text,
                 Index = item.Index
             }));
-            // build html for correct text showing
-            BuildResultHtml(sr);
+            // clean text for correct text showing
+            CleanResultText(sr);
 
             return sr;
         }
 
         /// <summary>
-        /// Build html from simple text in search results for correct showing
+        /// Clean text from external spaces or  for correct showing
         /// </summary>
-        private void BuildResultHtml(SearchResults<BrainySearchResult> searchResults)
+        private void CleanResultText(SearchResults<BrainySearchResult> searchResults)
         {
             foreach (var r in searchResults.Results.Where(item => !string.IsNullOrEmpty(item.Text)))
             {
+                r.Title = HttpUtility.HtmlDecode(r.Title);
+                r.Text = HttpUtility.HtmlDecode(r.Text);
                 while (r.Text.Contains("\r")) r.Text = r.Text.Replace("\r", " ");
                 while (r.Text.Contains("  ")) r.Text = r.Text.Replace("  ", " ");
                 while (r.Text.Contains("\n \n")) r.Text = r.Text.Replace("\n \n", "\n");
                 while (r.Text.Contains("\n\n")) r.Text = r.Text.Replace("\n\n", "\n");
-                r.Html = string.Format("<p>{0}</p>", r.Text.Replace("\n", "</p><p>"));
             }
         }
 

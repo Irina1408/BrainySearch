@@ -40,7 +40,7 @@ namespace BrainySearch.Controllers
         public ActionResult Index()
         {
             // load data from database
-            var lectures = lecturesService.GetAll();
+            var lectures = lecturesService.GetAllByUserId(User.Identity.GetUserId());
 
             // result view
             var lecturesListViewModel = new LecturesListViewModel();
@@ -57,12 +57,12 @@ namespace BrainySearch.Controllers
         }
 
         [HttpGet]
-        public ActionResult CreateLecture(int[] searchResultIds)
+        public ActionResult Create(int[] searchResultIds)
         {
             // get data
             SearchResultViewModel[] searchResults = Session[SharedData.SearchResultsKeyName] as SearchResultViewModel[];
             string lectureTheme = Session[SharedData.LectureThemeKeyName] as string;
-            string[] keyWords = Session[SharedData.KeyWordsKeyName] as string[];
+            List<string> keyWords = Session[SharedData.KeyWordsKeyName] as List<string>;
             Session[SharedData.IsNewLectureKeyName] = true;
 
             var lectureText = new StringBuilder();
@@ -82,84 +82,54 @@ namespace BrainySearch.Controllers
             var lectureDetails = new LectureDetailsViewModel()
             {
                 LectureTheme = lectureTheme,
-                Text = lectureText.ToString(),
-                KeyWords = keyWords,
-                Links = searchResults.Where(item => searchResultIds.Contains(item.Id)).Select(item => item.LinkInfo).ToArray()
+                Text = lectureText.ToString()
             };
+            
+            lectureDetails.KeyWords.AddRange(keyWords);
+            lectureDetails.Links.AddRange(searchResults.Where(item => searchResultIds.Contains(item.Id)).Select(item => item.LinkInfo));
 
-            return View("LectureEditing", lectureDetails);
+            return View("Edit", lectureDetails);
         }
-
+        
         [HttpGet]
-        public ActionResult LectureEditing(Guid lectureId)
+        public ActionResult Edit(Guid lectureId)
         {
             var lecture = lecturesService.GetById(lectureId);
             LectureDetailsViewModel model = new LectureDetailsViewModel()
             {
                 LectureId = lectureId,
                 LectureTheme = lecture.Theme,
-                Text = lecture.Text,
-                KeyWords = keyWordService.GetAllByLectureId(lectureId).Select(item => item.KeyWordText).ToArray(),
-                Links = initialInfoService.GetAllByLectureId(lectureId).Select(item => new LinkInfo() { SourceLink = item.SourceLink }).ToArray()
+                Text = lecture.Text
             };
+
+            model.KeyWords.AddRange(keyWordService.GetAllByLectureId(lectureId).Select(item => item.KeyWordText));
+            model.Links.AddRange(initialInfoService.GetAllByLectureId(lectureId).Select(item => new LinkInfo() { SourceLink = item.SourceLink }));
 
             Session[SharedData.IsNewLectureKeyName] = false;
             Session[SharedData.LectureIdInEditingKeyName] = lectureId;
 
             return View(model);
         }
-
-        //[HttpGet]
-        //public ActionResult LectureEditing()
-        //{
-        //    // get data
-        //    SearchResultViewModel[] searchResults = Session[SharedData.SearchResultsKeyName] as SearchResultViewModel[];
-        //    string lectureTheme = Session[SharedData.LectureThemeKeyName] as string;
-        //    string[] keyWords = Session[SharedData.KeyWordsKeyName] as string[];
-
-        //    var lectureText = new StringBuilder();
-
-        //    if (searchResults != null)
-        //    {
-        //        foreach (var sr in searchResults)
-        //        {
-        //            if (lectureText.Length > 0)
-        //                lectureText.AppendLine();
-        //            lectureText.AppendLine(sr.Title);
-        //            lectureText.AppendLine(sr.Text);
-        //        }
-        //    }
-
-        //    // build view
-        //    var lectureDetails = new LectureDetailsViewModel()
-        //    {
-        //        LectureTheme = lectureTheme,
-        //        Text = lectureText.ToString(),
-        //        KeyWords = keyWords
-        //    };
-
-        //    return View(lectureDetails);
-        //}
-
+        
         [HttpPost]
-        public ActionResult SaveLecture(LectureDetailsViewModel model)
+        [ValidateInput(false)]
+        public ActionResult Save(LectureDetailsViewModel model)
         {
             // update model (to be updated this implementation)
             bool isNew = (bool)Session[SharedData.IsNewLectureKeyName];
             if (isNew)
             {
                 // get data to save
-                model.LectureTheme = Session[SharedData.LectureThemeKeyName] as string;
-                model.KeyWords = Session[SharedData.KeyWordsKeyName] as string[];
+                var lectureTheme = Session[SharedData.LectureThemeKeyName] as string;
+                var keyWords = Session[SharedData.KeyWordsKeyName] as List<string>;
                 SearchResultViewModel[] searchResults = Session[SharedData.SearchResultsKeyName] as SearchResultViewModel[];
                 // clean data
                 Session.Remove(SharedData.LectureThemeKeyName);
                 Session.Remove(SharedData.KeyWordsKeyName);
                 Session.Remove(SharedData.SearchResultsKeyName);
                 // save lecture to database
-                // TODO: save
                 var lecture = new Lecture();
-                lecture.Theme = model.LectureTheme;
+                lecture.Theme = lectureTheme;
                 lecture.Text = model.Text;
                 lecture.UserId = User.Identity.GetUserId();
                 foreach (var res in searchResults)
@@ -173,7 +143,7 @@ namespace BrainySearch.Controllers
                     };
                     lecture.InitialInfos.Add(initialInfo);
                 }
-                foreach(var kw in model.KeyWords)
+                foreach(var kw in keyWords)
                 {
                     var keyWord = new KeyWord()
                     {
@@ -204,18 +174,29 @@ namespace BrainySearch.Controllers
         }
 
         [HttpGet]
-        public ActionResult LectureDetails(Guid lectureId)
+        public ActionResult Details(Guid lectureId)
         {
             var lecture = lecturesService.GetById(lectureId);
             LectureDetailsViewModel model = new LectureDetailsViewModel()
             {
                 LectureId = lectureId,
                 LectureTheme = lecture.Theme,
-                Text = lecture.Text,
-                KeyWords = keyWordService.GetAllByLectureId(lectureId).Select(item => item.KeyWordText).ToArray(),
-                Links = initialInfoService.GetAllByLectureId(lectureId).Select(item => new LinkInfo() { SourceLink = item.SourceLink }).ToArray()
+                Text = lecture.Text
             };
+
+            model.KeyWords.AddRange(keyWordService.GetAllByLectureId(lectureId).Select(item => item.KeyWordText));
+            model.Links.AddRange(initialInfoService.GetAllByLectureId(lectureId).Select(item => new LinkInfo() { SourceLink = item.SourceLink }));
+
             return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult Delete(Guid lectureId)
+        {
+            lecturesService.DeleteById(lectureId);
+            lecturesService.Save();
+
+            return RedirectToAction("Index");
         }
 
         #endregion

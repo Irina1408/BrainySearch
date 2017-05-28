@@ -11,6 +11,7 @@ namespace BrainySearch.Data
 {
     using Microsoft.AspNet.Identity.EntityFramework;
     using Models;
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Configuration;
     using System.Data.Entity;
 
@@ -26,7 +27,7 @@ namespace BrainySearch.Data
         {
         }
 
-        public DbSet<InitialInfo> InitialInfos { get; set; }
+        public DbSet<InitialInfo> InitialInfoes { get; set; }
         public DbSet<Lecture> Lectures { get; set; }
         public DbSet<KeyWord> KeyWords { get; set; }
 
@@ -38,6 +39,9 @@ namespace BrainySearch.Data
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Lecture>().Property(u => u.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
         }
     }
 }
