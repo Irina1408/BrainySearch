@@ -7,56 +7,65 @@
     <link href="~/Content/keywords.css" rel="stylesheet" type="text/css" />   
 }
 
-<h1>@Model.LectureTheme</h1>
-
-@* Key words *@
-@if (Model.KeyWords.Count > 0)
+@using (Html.BeginForm("Save", "Lectures", new { area = "Admin" }, FormMethod.Post))
 {
-    <div class="row" style="margin-top: 20px;">
-        <div class="col-sm-6 col-md-2" style="width: 11%;">
-            <h4>Key words:</h4>
+    <a onclick="EditTheme()" id="themeLabel"><h1 id="lectureThemeTextLabel">@Model.LectureTheme</h1></a>
+
+    <div id="themeEditor" class="row" style="margin-left: 0px; margin-top: 40px; display: none;">
+        @Html.TextAreaFor(model => model.LectureTheme, new { id = "lectureThemeText", @class = "textarea-fullpage", cols = 150, onblur= "EndEditTheme()" })
+    </div>
+
+    @*<h1>@Model.LectureTheme</h1>*@
+
+    @* Key words *@
+    if (Model.KeyWords.Count > 0)
+    {
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-sm-6 col-md-2" style="width: 11%;">
+                <h4>Key words:</h4>
+            </div>
+            <div class="col-sm-6 col-md-10" style="margin-left: -30px; margin-top: 3px;">
+                <div class="keyword-group" role="group">
+                    @foreach (var keyWord in Model.KeyWords)
+                    {
+                        <a class='keyword-active' style='padding-right: 10px'>@keyWord</a>
+                    }
+                </div>
+            </div>
         </div>
-        <div class="col-sm-6 col-md-10" style="margin-left: -30px; margin-top: 3px;">
-            <div class="keyword-group" role="group">
-                @foreach (var keyWord in Model.KeyWords)
+    }
+
+    @* Links *@
+    <div class="row" style="margin-top: 0px;">
+        <div class="col-sm-6 col-md-1" style="width: 5%;">
+            <h4>Links:</h4>
+        </div>
+        <div class="col-sm-6 col-md-10" style="margin-top: 10px">
+            <div class="link-group" role="group">
+                @foreach (var linkInfo in Model.Links)
                 {
-                    <a class='keyword-active' style='padding-right: 10px'>@keyWord</a>
+                    <a class="a-link" style='word-wrap:break-word' href='@linkInfo.SourceLink'>@linkInfo.ShortLink</a>
                 }
             </div>
         </div>
     </div>
-}
 
-@* Links *@
-<div class="row" style="margin-top: 0px;">
-    <div class="col-sm-6 col-md-1" style="width: 5%;">
-        <h4>Links:</h4>
-    </div>
-    <div class="col-sm-6 col-md-10" style="margin-top: 10px">
-        <div class="link-group" role="group">
-            @foreach (var linkInfo in Model.Links)
-            {
-                <a class="a-link" style='word-wrap:break-word' href='@linkInfo.SourceLink'>@linkInfo.ShortLink</a>
-            }
-        </div>
-    </div>
-</div>
-
-<div style="margin-top: 20px;">
-    @using (Html.BeginForm("Save", "Lectures", new { area = "Admin" }, FormMethod.Post))
-    {
+    <div style="margin-top: 20px;">
         <div class="row" style="margin-left: 0px;">
             @Html.TextAreaFor(model => model.Text, new { @class = "textarea-fullpage", cols = 150 })
         </div>
 
-        <button style="margin-top: 10px" type="submit" class="btn btn-success">Save</button>
+        <div style="text-align:right;">
+            <button style="margin-top: 10px" type="submit" class="btn btn-success">Save</button>
 
-        using (Html.BeginForm("Index", "Lectures", null, FormMethod.Get))
-        {
-            <button style="margin-top: 10px; margin-left: 10px;" type="submit" class="btn">Cancel</button>
-        }
-    }    
-</div>
+            @using (Html.BeginForm("Index", "Lectures", null, FormMethod.Get))
+            {
+                <button style="margin-top: 10px; margin-left: 10px; margin-right: 25px;" type="submit" class="btn">Cancel</button>
+            }
+        </div>     
+    </div>
+}
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
@@ -66,5 +75,16 @@
 
         autosize(document.querySelectorAll('textarea'));
 
+        function EditTheme() {
+            $("#themeLabel").hide();
+            $("#themeEditor").show();
+            $("#lectureThemeText").focus();
+        }
+
+        function EndEditTheme() {
+            $("#lectureThemeTextLabel").html($("#lectureThemeText")[0].value);
+            $("#themeLabel").show();
+            $("#themeEditor").hide();
+        }
     </script>
 }

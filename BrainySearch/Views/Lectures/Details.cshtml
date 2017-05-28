@@ -7,12 +7,19 @@
     <link href="~/Content/keywords.css" rel="stylesheet" type="text/css" />
 }
 
-<div class="row" style="margin-top: 50px;"> 
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-    @Html.ActionLink("Back to list", "Index", "Lectures", null, new { @class = "action-link" })
-    @Html.ActionLink("Edit", "Edit", "Lectures", new { lectureId = Model.LectureId }, new { @class = "action-link", @style = "margin-left:20px"})
-    @Html.ActionLink("Delete", "Delete", "Lectures", new { lectureId = Model.LectureId },
-                    new { onclick = "return confirm('Are you sure you wish to delete this lecture?');", @class = "action-link", @style = "margin-left:10px" })
+<div class="row" style="margin-top: 40px;">
+    <div class="col-sm-6 col-md-2">
+        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+        @Html.ActionLink("Back to list", "Index", "Lectures", null, new { @class = "action-link" })
+    </div>   
+    <div  class="col-sm-6 col-md-10" style="text-align:right;">
+        @Html.ActionLink("Edit", "Edit", "Lectures", new { lectureId = Model.LectureId }, new { @class = "action-link", @style = "margin-left:10px;" })
+
+        @Html.ActionLink("Delete", "Delete", "Lectures", new { lectureId = Model.LectureId },
+                    new { onclick = "return confirm('Are you sure you wish to delete this lecture?');", @class = "action-link", @style = "margin-left:10px;" })
+
+        @*<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>*@
+    </div>  
 </div>
 
 <h1 style="margin-top: 20px;">@Model.LectureTheme</h1>
@@ -51,7 +58,7 @@
 </div>
 
 <div class="row" style="margin-top: 15px; margin-left: 0px;">
-    <p>@Model.Html</p>
+    @Html.Raw(@Model.Html)
 </div>
 
 @section Scripts {

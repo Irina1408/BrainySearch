@@ -9,7 +9,7 @@
         <div class="jumbotron">
 
             <a href="@Url.Action("Details", "Lectures", new { lectureId = lecture.LectureId })"><h2>@lecture.LectureTheme</h2></a>
-            <a href="@Url.Action("Details", "Lectures", new { lectureId = lecture.LectureId })"><p>@lecture.ShortHtml</p></a>
+            <a href="@Url.Action("Details", "Lectures", new { lectureId = lecture.LectureId })"><p>@Html.Raw(@lecture.ShortHtml)</p></a>
 
             <div style="text-align:right;">
 

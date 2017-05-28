@@ -55,11 +55,7 @@ h1, h2 {
     margin-top: 40px;
 }
 
-a, i {
-    color: #1F6402;
-}
-
-a:hover, i:hover {
+a, i, a:hover, i:hover, a:active, a:focus {
     color: #1F6402;
 }
 

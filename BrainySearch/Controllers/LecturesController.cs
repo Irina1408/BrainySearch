@@ -64,6 +64,8 @@ namespace BrainySearch.Controllers
             string lectureTheme = Session[SharedData.LectureThemeKeyName] as string;
             List<string> keyWords = Session[SharedData.KeyWordsKeyName] as List<string>;
             Session[SharedData.IsNewLectureKeyName] = true;
+            // clean data
+            Session.Remove(SharedData.LectureThemeKeyName);
 
             var lectureText = new StringBuilder();
 
@@ -120,16 +122,14 @@ namespace BrainySearch.Controllers
             if (isNew)
             {
                 // get data to save
-                var lectureTheme = Session[SharedData.LectureThemeKeyName] as string;
                 var keyWords = Session[SharedData.KeyWordsKeyName] as List<string>;
                 SearchResultViewModel[] searchResults = Session[SharedData.SearchResultsKeyName] as SearchResultViewModel[];
                 // clean data
-                Session.Remove(SharedData.LectureThemeKeyName);
                 Session.Remove(SharedData.KeyWordsKeyName);
                 Session.Remove(SharedData.SearchResultsKeyName);
                 // save lecture to database
                 var lecture = new Lecture();
-                lecture.Theme = lectureTheme;
+                lecture.Theme = model.LectureTheme;
                 lecture.Text = model.Text;
                 lecture.UserId = User.Identity.GetUserId();
                 foreach (var res in searchResults)
@@ -163,6 +163,7 @@ namespace BrainySearch.Controllers
                 // update lecture in database
                 var lecture = lecturesService.GetById(lectureId);
                 lecture.Text = model.Text;
+                lecture.Theme = model.LectureTheme;
                 lecturesService.Save();
             }
 
