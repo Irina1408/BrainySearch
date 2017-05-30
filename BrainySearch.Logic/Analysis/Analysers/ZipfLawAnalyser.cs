@@ -1,4 +1,5 @@
 ﻿using BrainySearch.Logic.TextProcessing;
+using BrainySearch.Logic.TextProcessing.WordStemming;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +19,7 @@ namespace BrainySearch.Logic.Analysis.Analysers
         #region Private fields
 
         private List<string> stopWords;
-        private WordNormalizer wordNormalizer;
+        private IWordStemmer wordStemmer;
 
         #endregion
 
@@ -27,7 +28,7 @@ namespace BrainySearch.Logic.Analysis.Analysers
         public ZipfLawAnalyser()
         {
             stopWords = TextProcessingUtils.GetStopWords();
-            wordNormalizer = new WordNormalizer();
+            wordStemmer = new IveonikWordStemmer();
         }
 
         #endregion
@@ -43,7 +44,7 @@ namespace BrainySearch.Logic.Analysis.Analysers
             
             // 1. Get all normalized words in the text and calculate its count in the text
             var wordCount = new Dictionary<string, int>();
-            foreach (var word in wordNormalizer.GetNormalizedWords(text, false))
+            foreach (var word in wordStemmer.StemPhrase(text, false))
             {
                 // exclude stop words
                 if (stopWords.Contains(word) || word.Length <= 2) continue;

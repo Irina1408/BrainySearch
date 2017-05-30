@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using YandexMystem.Wrapper;
 using YandexMystem.Wrapper.Models;
 
-namespace BrainySearch.Logic.TextProcessing
+namespace BrainySearch.Logic.TextProcessing.WordStemming
 {
     /// <summary>
     /// Normalize words form
     /// </summary>
-    public class WordNormalizer
+    public class YandexWordStemmer : IWordStemmer
     {
         #region Private fields
 
@@ -21,19 +21,19 @@ namespace BrainySearch.Logic.TextProcessing
 
         #region Initialization
 
-        public WordNormalizer()
+        public YandexWordStemmer()
         {
             mysteam = new Mysteam();
         }
 
         #endregion
 
-        #region Public properties
+        #region IWordStemmer implementation
 
         /// <summary>
         /// Returns normalized word
         /// </summary>
-        public string NormalizeWord(string word)
+        public string StemWord(string word)
         {
             // get normalization result
             var res = mysteam.GetWords(word);
@@ -50,7 +50,7 @@ namespace BrainySearch.Logic.TextProcessing
         /// <summary>
         /// Returns list of normalized words in text
         /// </summary>
-        public List<string> GetNormalizedWords(string text, bool distinct)
+        public List<string> StemPhrase(string text, bool distinct)
         {
             var words = new List<string>();
             // prepare text

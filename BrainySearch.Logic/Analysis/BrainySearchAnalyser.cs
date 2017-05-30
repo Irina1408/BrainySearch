@@ -137,7 +137,7 @@ namespace BrainySearch.Logic.Analysis
 
             int index = 1;
             // sort in the arithmetic mean of NaturalLanguagePercentage and TextScore percentage
-            foreach (var r in analysisResults.OrderBy(item => (item.NaturalLanguagePercentage + (item.TextScore / maxTextScore)) / 2))
+            foreach (var r in analysisResults.OrderByDescending(item => (item.NaturalLanguagePercentage + (item.TextScore / maxTextScore)) / 2))
             {
                 r.Index = index;
                 index += 1;

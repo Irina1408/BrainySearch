@@ -46,6 +46,10 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="StemmersNet, Version=1.1.1.0, Culture=neutral, PublicKeyToken=5b16b226aedf3c3b, processorArchitecture=MSIL">
+      <HintPath>..\packages\StemmersNet.1.1.1.0\lib\net20\StemmersNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -107,7 +111,9 @@
     <Compile Include="Search\Wikipedia\WikipediaParameters.cs" />
     <Compile Include="Search\Wikipedia\WikipediaService.cs" />
     <Compile Include="TextProcessing\TextProcessingUtils.cs" />
-    <Compile Include="TextProcessing\WordNormalizer.cs" />
+    <Compile Include="TextProcessing\WordStemming\IveonikWordStemmer.cs" />
+    <Compile Include="TextProcessing\WordStemming\YandexWordStemmer.cs" />
+    <Compile Include="TextProcessing\WordStemming\IWordStemmer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TextProcessing\stop-words.txt" />
@@ -123,6 +129,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

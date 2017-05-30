@@ -1,5 +1,6 @@
 ﻿using BrainySearch.Logic.Search.Base;
 using BrainySearch.Logic.TextProcessing;
+using BrainySearch.Logic.TextProcessing.WordStemming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace BrainySearch.Logic.Analysis
     {
         #region Private fields
         
-        private WordNormalizer wordNormalizer;
+        private IWordStemmer wordStemmer;
 
         #endregion
 
@@ -21,7 +22,7 @@ namespace BrainySearch.Logic.Analysis
 
         public SearchResultPreparer()
         {
-            wordNormalizer = new WordNormalizer();
+            wordStemmer = new IveonikWordStemmer();
         }
 
         #endregion
@@ -45,7 +46,7 @@ namespace BrainySearch.Logic.Analysis
                     // init
                     var srToAnalyse = new SearchResultToAnalyse() { SearchResult = tmp };
                     // get all normalized words in the text
-                    srToAnalyse.NormalizedWords.AddRange(wordNormalizer.GetNormalizedWords(tmp.Text, false));
+                    srToAnalyse.NormalizedWords.AddRange(wordStemmer.StemPhrase(tmp.Text, false));
                     // calculate distinct normalized words count in the text
                     foreach (var nw in srToAnalyse.NormalizedWords)
                     {

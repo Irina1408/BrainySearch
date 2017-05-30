@@ -1,4 +1,5 @@
 ﻿using BrainySearch.Logic.TextProcessing;
+using BrainySearch.Logic.TextProcessing.WordStemming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace BrainySearch.Logic.Filters
     {
         #region Private fields
         
-        protected WordNormalizer wordNormalizer;
+        protected IWordStemmer wordStemmer;
         private List<string> normalizedKeyWords = new List<string>();
 
         #endregion
@@ -25,7 +26,7 @@ namespace BrainySearch.Logic.Filters
         {
             KeyWords = new List<string>();
             normalizedKeyWords = new List<string>();
-            wordNormalizer = new WordNormalizer();
+            wordStemmer = new IveonikWordStemmer();
         }
 
         #endregion
@@ -47,7 +48,7 @@ namespace BrainySearch.Logic.Filters
             // normalize key words
             if (normalizedKeyWords.Count == 0) NormalizeKeyWords();
             // get all normalized words in text
-            var normalizedWords = wordNormalizer.GetNormalizedWords(text, true);
+            var normalizedWords = wordStemmer.StemPhrase(text, true);
             // text should contain all key words
             return normalizedKeyWords.All(item => normalizedWords.Contains(item));
         }
@@ -62,7 +63,7 @@ namespace BrainySearch.Logic.Filters
             // normalize key words
             if (normalizedKeyWords.Count == 0) NormalizeKeyWords();
             // get all normalized words in text
-            var normalizedWords = wordNormalizer.GetNormalizedWords(text, true);
+            var normalizedWords = wordStemmer.StemPhrase(text, true);
             // text should contain all key words
             return normalizedKeyWords.Where(item => normalizedWords.Any(it => it.Contains(item))).Count();
         }
@@ -73,7 +74,7 @@ namespace BrainySearch.Logic.Filters
             normalizedKeyWords.Clear();
             // fill normalized key words
             foreach (var keyWord in KeyWords)
-                normalizedKeyWords.AddRange(wordNormalizer.GetNormalizedWords(keyWord, true));
+                normalizedKeyWords.AddRange(wordStemmer.StemPhrase(keyWord, true));
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using BrainySearch.Logic.TextProcessing;
+using BrainySearch.Logic.TextProcessing.WordStemming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace BrainySearch.Logic.Analysis.Analysers
     {
         #region Private fields
         
-        private WordNormalizer wordNormalizer;
+        private IWordStemmer wordStemmer;
         private Dictionary<string, List<string>> normalizedKeyWords = new Dictionary<string, List<string>>();
 
         #endregion
@@ -24,7 +25,7 @@ namespace BrainySearch.Logic.Analysis.Analysers
         public TextRankingAnalyser()
         {
             normalizedKeyWords = new Dictionary<string, List<string>>();
-            wordNormalizer = new WordNormalizer();
+            wordStemmer = new IveonikWordStemmer();
         }
 
         #endregion
@@ -155,7 +156,7 @@ namespace BrainySearch.Logic.Analysis.Analysers
             normalizedKeyWords.Clear();
             // fill normalized key words
             foreach (var keyWord in KeyWords)
-                normalizedKeyWords.Add(keyWord.ToLower(), wordNormalizer.GetNormalizedWords(keyWord, true));
+                normalizedKeyWords.Add(keyWord.ToLower(), wordStemmer.StemPhrase(keyWord, true));
         }
 
         #endregion
